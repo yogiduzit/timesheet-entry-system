@@ -30,7 +30,9 @@ public class AdminManager implements Serializable {
     private static final long serialVersionUID =1233413L;
     @Resource(mappedName = "java:jobss/datasources/MySQLDS")
     private DataSource dataSource;
+    
     @Inject EmployeeManagers employeeManager;
+    
     
     public Employee find(int num) {
         
