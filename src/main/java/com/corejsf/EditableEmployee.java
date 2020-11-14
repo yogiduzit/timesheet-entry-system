@@ -48,6 +48,10 @@ public class EditableEmployee {
 		this.credentials = new Credentials();
 	}
 	
+	public EditableEmployee(Employee employee) {
+	    this.employee = employee;
+	}
+	
 	/**
 	 * Getter for editable
 	 * @return editable

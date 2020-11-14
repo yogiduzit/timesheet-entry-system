@@ -27,7 +27,7 @@ import java.sql.SQLException;
 @ConversationScoped
 public class EmployeeManagers implements Serializable {
     private static final long serialVersionUID =1L;
-    @Resource(mappedName = "java:jboss/datasources/MySQLDS")
+    @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
     
     public Employee find(int num) {
@@ -74,7 +74,8 @@ public class EmployeeManagers implements Serializable {
             try {
                 connection = dataSource.getConnection();
                 try {
-                    stmt = connection.prepareStatement("INSERT INTO Employees " 
+                    stmt = connection.prepareStatement(
+                            "INSERT INTO Employees " 
                             + "VALUES (?, ?, ?)");
                     stmt.setInt(empNo, employee.getEmpNumber());
                     stmt.setString(empName, employee.getFullName());
@@ -108,7 +109,7 @@ public class EmployeeManagers implements Serializable {
                 try {
                     stmt = connection.prepareStatement("UPDATE Employees "
                             + "SET EmpName = ?, EmpUserName = ? "
-                            + "WHERE EmpNo = >");
+                            + "WHERE EmpNo = ?");
                     stmt.setString(empName, employee.getFullName());
                     stmt.setString(empUsername, employee.getUsername());
                     stmt.setInt(empNo, employee.getEmpNumber());
