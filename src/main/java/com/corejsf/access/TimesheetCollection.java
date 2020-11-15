@@ -18,19 +18,14 @@ import com.corejsf.model.timesheet.Timesheet;
 public interface TimesheetCollection extends Serializable {
     /**
      * timesheets getter.
+     *
      * @return all of the timesheets.
      */
     List<Timesheet> getTimesheets();
 
     /**
-     * get all timesheets for an employee.
-     * @param e the employee whose timesheets are returned
-     * @return all of the timesheets for an employee.
-     */
-    List<Timesheet> getTimesheets(Employee e);
-
-    /**
      * get current timesheet for an employee.
+     *
      * @param e the employee whose current timesheet is returned
      * @return the current timesheet for an employee.
      */
@@ -42,5 +37,12 @@ public interface TimesheetCollection extends Serializable {
      * @return a String representing navigation to the newTimesheet page.
      */
     String addTimesheet(Timesheet timesheet);
-}
 
+    /**
+     * get all timesheets for an employee.
+     *
+     * @param e the employee whose timesheets are returned
+     * @return all of the timesheets for an employee.
+     */
+    List<Timesheet> getTimesheets(Integer empNo);
+}

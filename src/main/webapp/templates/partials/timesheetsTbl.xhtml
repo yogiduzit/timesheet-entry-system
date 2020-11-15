@@ -24,7 +24,7 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.workPackage']}</f:facet>
-					<h:outputText value="#{timesheetRow.workPackage}"
+					<h:outputText value="#{timesheetRow.workPackage}" 
 						rendered="#{not timesheetController.editTimesheet.editable}" />
 					<h:inputText value="#{timesheetRow.workPackage}"
 						rendered="#{timesheetController.editTimesheet.editable}" />
@@ -35,63 +35,63 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.saturday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[0]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[0]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[0]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[0]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.sunday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[1]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[1]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[1]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[1]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.monday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[2]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[2]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[2]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[2]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.tuesday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[3]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[3]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[3]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[3]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.wednesday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[4]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[4]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[4]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[4]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.thursday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[5]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[5]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[5]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[5]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">#{msgs['timesheetRow.friday']}</f:facet>
-					<h:outputText value="#{timesheetRow.hoursForWeek[6]}"
+					<h:outputText value="#{timesheetRow.hoursForWeek[6]}" converter="weeklyHours"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[6]}"
+					<h:inputText value="#{timesheetRow.hoursForWeek[6]}" converter="weeklyHours"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</h:inputText>

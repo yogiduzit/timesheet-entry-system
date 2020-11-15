@@ -15,6 +15,7 @@ import javax.inject.Named;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.access.TimesheetManager;
+import com.corejsf.access.TimesheetRowManager;
 import com.corejsf.model.timesheet.Timesheet;
 
 /**
@@ -39,6 +40,8 @@ public class TimesheetController implements Serializable {
     @Inject
     private EmployeeManager empManager;
 
+    @Inject
+    private TimesheetRowManager rowManager;
     /**
      * Injecting the conversation scope.
      */
@@ -79,6 +82,19 @@ public class TimesheetController implements Serializable {
      * @return the timesheets
      */
     public List<Timesheet> getTimesheets() {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        if (timesheets == null) {
+            try {
+                if (empManager.isAdminLogin()) {
+                    timesheets = manager.getTimesheets();
+                } else {
+                    timesheets = manager.getTimesheets(empManager.getCurrentEmployee().getEmpNumber());
+                }
+            } catch (final Exception e) {
+                context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            }
+
+        }
         return timesheets;
     }
 
@@ -107,13 +123,19 @@ public class TimesheetController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        if (t.getEmployee().getEmpNumber() != empManager.getCurrentEmployee().getEmpNumber()) {
-            if (empManager.isAdminLogin()) {
-                editTimesheet = new EditableTimesheet(true, t);
-            } else {
-                return null;
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (t.getEmployee().getEmpNumber() != empManager.getCurrentEmployee().getEmpNumber()) {
+                if (empManager.isAdminLogin()) {
+                    editTimesheet = new EditableTimesheet(true, t);
+                } else {
+                    return null;
+                }
             }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
         }
+
         editTimesheet = new EditableTimesheet(true, t);
         return "/timesheet/edit";
     }
@@ -126,13 +148,20 @@ public class TimesheetController implements Serializable {
      * @return route to the view
      */
     public String prepareView(Timesheet t) {
-        conversation.end();
-        if (t.getEmployee().getEmpNumber() != empManager.getCurrentEmployee().getEmpNumber()) {
-            if (empManager.isAdminLogin()) {
-                editTimesheet = new EditableTimesheet(true, t);
-            } else {
-                return null;
+        if (!conversation.isTransient()) {
+            conversation.end();
+        }
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (t.getEmployee().getEmpNumber() != empManager.getCurrentEmployee().getEmpNumber()) {
+                if (empManager.isAdminLogin()) {
+                    editTimesheet = new EditableTimesheet(false, t);
+                } else {
+                    return null;
+                }
             }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
         }
         editTimesheet = new EditableTimesheet(false, t);
         return "/timesheet/view";
@@ -147,11 +176,17 @@ public class TimesheetController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        if (empManager.isAdminLogin()) {
-            timesheets = manager.getTimesheets();
-        } else {
-            timesheets = manager.getTimesheets(empManager.getCurrentEmployee());
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (empManager.isAdminLogin()) {
+                timesheets = manager.getTimesheets();
+            } else {
+                timesheets = manager.getTimesheets(empManager.getCurrentEmployee().getEmpNumber());
+            }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
         }
+
         return "/timesheet/list";
     }
 
@@ -176,18 +211,16 @@ public class TimesheetController implements Serializable {
      * @return directory to list of timesheets
      */
     public String onCreate() {
-        editTimesheet.getTimesheet().setEmployee(empManager.getCurrentEmployee());
-
-        for (final Timesheet t : manager.getTimesheets(empManager.getCurrentEmployee())) {
-            if (t.getEndWeek().equals(editTimesheet.getTimesheet().getEndWeek())) {
-                final FacesContext context = FacesContext.getCurrentInstance();
-                context.addMessage(null,
-                        new FacesMessage("A timesheet with same end week already exists. Please try again"));
-                return null;
-            }
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            editTimesheet.getTimesheet().setEmployee(empManager.getCurrentEmployee());
+            final int timesheetId = manager.insert(editTimesheet.getTimesheet());
+            rowManager.create(timesheetId, editTimesheet.getTimesheet().getDetails());
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getMessage()));
+            return null;
         }
 
-        manager.addTimesheet(editTimesheet.getTimesheet());
         editTimesheet = null;
         conversation.end();
         return prepareList();
@@ -199,6 +232,15 @@ public class TimesheetController implements Serializable {
      * @return directory to list of timesheets
      */
     public String onEdit() {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            manager.merge(editTimesheet.getTimesheet());
+            rowManager.update(editTimesheet.getTimesheet().getId(), editTimesheet.getTimesheet().getDetails());
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getMessage()));
+            return null;
+        }
+
         editTimesheet = null;
         conversation.end();
         return prepareList();
