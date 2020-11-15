@@ -62,25 +62,28 @@ public class LoginController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-
-        final Employee employee = employeeManager.getEmployee(username);
         final FacesContext context = FacesContext.getCurrentInstance();
-
-        if (employee == null) {
-            context.addMessage(null, new FacesMessage("Unknown login, please try again"));
-            username = null;
-            password = null;
-            return null;
-        } else {
-            final Credentials credentials = new Credentials(username, password);
-            credentials.setEmpNumber(employee.getEmpNumber());
-            if (!employeeManager.verifyUser(employee, credentials)) {
-                context.addMessage(null, new FacesMessage("Could not authenticate user, please try again"));
+        try {
+            final Employee employee = employeeManager.find(username);
+            if (employee == null) {
+                context.addMessage(null, new FacesMessage("Unknown login, please try again"));
+                username = null;
+                password = null;
                 return null;
+            } else {
+                final Credentials credentials = new Credentials(username, password);
+                credentials.setEmpNumber(employee.getEmpNumber());
+                if (!employeeManager.verifyUser(employee, credentials)) {
+                    context.addMessage(null, new FacesMessage("Could not authenticate user, please try again"));
+                    return null;
+                }
+                context.getExternalContext().getSessionMap().put("emp_no", employee.getUsername());
+                conversation.end();
+                return "success";
             }
-            context.getExternalContext().getSessionMap().put("emp_no", employee.getUsername());
-            conversation.end();
-            return "success";
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            return null;
         }
     }
 
@@ -90,7 +93,9 @@ public class LoginController implements Serializable {
      * @return "logout"
      */
     public String logout() {
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        final FacesContext context = FacesContext.getCurrentInstance();
+        context.getExternalContext().invalidateSession();
+        context.getExternalContext().getSessionMap().clear();
         return "logout";
     }
 

@@ -4,12 +4,16 @@
 package com.corejsf.access;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import javax.annotation.Resource;
 import javax.enterprise.context.ConversationScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
+import javax.sql.DataSource;
 
-import com.corejsf.data.CredentialsList;
 import com.corejsf.model.employee.Credentials;
 
 /**
@@ -29,28 +33,115 @@ public class CredentialsManager implements Serializable {
     private static final long serialVersionUID = -6478292740340769939L;
 
     /**
-     * Injecting the CredentialsList
+     * Datasource for a project
      */
-    @Inject
-    private CredentialsList credentialsList;
+    @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
+    private DataSource dataSource;
 
     /**
      * Method to get the credentials by employee number
      *
      * @param empNumber
      * @return credentials
+     * @throws SQLException
      */
-    public Credentials getCredentials(int empNumber) {
-        for (final Credentials credentials : credentialsList.getAllCredentials()) {
-            if (credentials.getEmpNumber() == empNumber) {
-                return credentials;
+    public Credentials find(int empNumber) throws SQLException {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("SELECT * FROM Credentials WHERE EmpNo = ?");
+                    stmt.setInt(1, empNumber);
+                    final ResultSet result = stmt.executeQuery();
+                    if (result.next()) {
+                        final Credentials credentials = new Credentials(result.getString("EmpUserName"),
+                                result.getString("EmpPassword"));
+                        credentials.setEmpNumber(result.getInt("EmpNo"));
+                        return credentials;
+                    }
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
             }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLException(ex.getCause());
         }
         return null;
     }
 
-    public void add(Credentials credentials) {
-        credentialsList.getAllCredentials().add(credentials);
+    public void insert(Credentials credentials) throws SQLException {
+        final int EmpNo = 1;
+        final int EmpUserName = 2;
+        final int EmpPassword = 3;
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("INSERT INTO Credentials VALUES(?, ?, ?)");
+                    stmt.setInt(EmpNo, credentials.getEmpNumber());
+                    stmt.setString(EmpUserName, credentials.getUsername());
+                    stmt.setString(EmpPassword, credentials.getPassword());
+
+                    stmt.executeUpdate();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLException(ex.getCause());
+        }
+    }
+
+    public void merge(Credentials credentials) throws SQLException {
+        final int EmpUserName = 1;
+        final int EmpPassword = 2;
+        final int EmpNo = 3;
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement(
+                            "UPDATE Credentials " + "SET EmpUserName=?, EmpPassword=? " + "WHERE EmpNo = ?");
+                    stmt.setInt(EmpNo, credentials.getEmpNumber());
+                    stmt.setString(EmpUserName, credentials.getUsername());
+                    stmt.setString(EmpPassword, credentials.getPassword());
+
+                    stmt.executeUpdate();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLException(ex.getCause());
+        }
     }
 
 }

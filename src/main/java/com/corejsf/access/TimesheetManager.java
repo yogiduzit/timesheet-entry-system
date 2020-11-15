@@ -45,12 +45,14 @@ public class TimesheetManager implements Serializable {
     private TimesheetRowManager rowManager;
 
     @Inject
-    private EmployeeManagers empManager;
+    private EmployeeManager empManager;
 
     /**
      * Getting the Timesheets.
+     *
+     * @throws SQLException
      */
-    public List<Timesheet> getTimesheets() {
+    public List<Timesheet> getTimesheets() throws SQLException {
         final ArrayList<Timesheet> timesheets = new ArrayList<Timesheet>();
         Connection connection = null;
         Statement stmt = null;
@@ -80,17 +82,18 @@ public class TimesheetManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
-            return null;
+            throw new SQLException("Could not get timesheets! Please try again");
         }
         return timesheets;
     }
 
     /**
      * Getting all the timesheets for one employee.
+     *
+     * @throws SQLException
      */
-    public List<Timesheet> getTimesheets(Integer empNo) {
+    public List<Timesheet> getTimesheets(Integer empNo) throws SQLException {
         final ArrayList<Timesheet> timesheets = new ArrayList<Timesheet>();
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -121,35 +124,43 @@ public class TimesheetManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
-            return null;
+            throw new SQLException(ex.getCause());
         }
         return timesheets;
     }
 
     /**
      * Creating a Timesheet object and adding it to the collection.
+     *
+     * @throws SQLException
      */
-    public void insert(Timesheet timesheet) {
+    public int insert(Timesheet timesheet) throws SQLException {
         final int EmpNo = 1;
         final int EndWeek = 2;
 
         Connection connection = null;
         PreparedStatement stmt = null;
+        int timesheetId = -1;
         try {
             try {
                 connection = dataSource.getConnection();
                 connection.setAutoCommit(false);
                 try {
-                    stmt = connection.prepareStatement("INSERT INTO Timesheets(EmpNo, EndWeek) VALUES(?, ?)");
+                    stmt = connection.prepareStatement("INSERT INTO Timesheets(EmpNo, EndWeek) VALUES(?, ?)",
+                            Statement.RETURN_GENERATED_KEYS);
                     stmt.setInt(EmpNo, timesheet.getEmployee().getEmpNumber());
                     stmt.setDate(EndWeek, java.sql.Date.valueOf(timesheet.getEndWeek()));
                     stmt.executeUpdate();
                     connection.commit();
-                } catch (final Exception e) {
+
+                    final ResultSet rs = stmt.getGeneratedKeys();
+                    if (rs.next()) {
+                        timesheetId = rs.getInt(1);
+                    }
+                } catch (final SQLException e) {
                     connection.rollback();
-                    e.printStackTrace();
+                    throw e;
                 } finally {
                     if (stmt != null) {
                         stmt.close();
@@ -161,15 +172,18 @@ public class TimesheetManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
+            throw ex;
         }
+        return timesheetId;
     }
 
     /**
      * Creating a Timesheet object and adding it to the collection.
+     *
+     * @throws SQLException
      */
-    public void merge(Timesheet timesheet) {
+    public void merge(Timesheet timesheet) throws SQLException {
         final int EmpNo = 1;
         final int EndWeek = 2;
         final int TimesheetID = 3;
@@ -202,12 +216,12 @@ public class TimesheetManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
+            throw new SQLException(ex.getCause());
         }
     }
 
-    public Timesheet find(Integer empNo, String weekEnding) {
+    public Timesheet find(Integer empNo, String weekEnding) throws SQLException {
         final Timesheet timesheet = new Timesheet();
 
         final int EmpNo = 1;
@@ -245,9 +259,8 @@ public class TimesheetManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
-            return null;
+            throw new SQLException(ex.getCause());
         }
         return timesheet;
     }

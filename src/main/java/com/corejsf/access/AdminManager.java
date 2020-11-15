@@ -3,6 +3,7 @@ package com.corejsf.access;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -22,9 +23,9 @@ public class AdminManager implements Serializable {
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
     @Inject
-    EmployeeManagers employeeManager;
+    private EmployeeManager employeeManager;
 
-    public Employee find() {
+    public Employee find() throws SQLDataException {
         Connection connection = null;
         Statement stmt = null;
         try {
@@ -51,9 +52,8 @@ public class AdminManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in find admin");
             ex.printStackTrace();
-            return null;
+            throw new SQLDataException("Could not find admin! Please try again");
         }
     }
 

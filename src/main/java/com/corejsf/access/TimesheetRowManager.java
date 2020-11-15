@@ -40,8 +40,10 @@ public class TimesheetRowManager implements Serializable {
 
     /**
      * Getting the Timesheets.
+     *
+     * @throws SQLException
      */
-    public ArrayList<TimesheetRow> getTimesheetRows(Integer timesheetId) {
+    public ArrayList<TimesheetRow> getTimesheetRows(Integer timesheetId) throws SQLException {
         final ArrayList<TimesheetRow> timesheetRows = new ArrayList<>();
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -71,25 +73,23 @@ public class TimesheetRowManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
-            return null;
+            throw ex;
         }
         return timesheetRows;
     }
 
     /**
      * Creating a Timesheet object and adding it to the collection.
+     *
+     * @throws SQLException
      */
-    public void upsert(Integer timesheetId, List<TimesheetRow> timesheetRows) {
+    public void create(Integer timesheetId, List<TimesheetRow> timesheetRows) throws SQLException {
         final int TimesheetID = 1;
         final int ProjectID = 2;
         final int WorkPackage = 3;
         final int Notes = 4;
         final int HoursForWeek = 5;
-
-        final int UpdatedHoursForWeek = 6;
-        final int UpdatedNotes = 7;
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -97,18 +97,13 @@ public class TimesheetRowManager implements Serializable {
             try {
                 connection = dataSource.getConnection();
                 try {
-                    stmt = connection
-                            .prepareStatement("INSERT INTO TimesheetRows VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE"
-                                    + " HoursForWeek=?, Notes=?");
+                    stmt = connection.prepareStatement("INSERT INTO TimesheetRows VALUES(?, ?, ?, ?, ?)");
                     for (final TimesheetRow timesheetRow : timesheetRows) {
                         stmt.setInt(TimesheetID, timesheetId);
                         stmt.setInt(ProjectID, timesheetRow.getProjectID());
                         stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
                         stmt.setString(Notes, timesheetRow.getNotes());
                         stmt.setString(HoursForWeek, stringifyWeeklyHours(timesheetRow.getHoursForWeek()));
-
-                        stmt.setString(UpdatedHoursForWeek, stringifyWeeklyHours(timesheetRow.getHoursForWeek()));
-                        stmt.setString(UpdatedNotes, timesheetRow.getNotes());
                         stmt.addBatch();
                         stmt.clearParameters();
                     }
@@ -124,51 +119,99 @@ public class TimesheetRowManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            System.out.println("Error in getAll");
             ex.printStackTrace();
+            throw ex;
         }
     }
 
-//    /**
-//     * Creating a Timesheet object and adding it to the collection.
-//     */
-//    public void merge(Integer timesheetId, TimesheetRow timesheetRow) {
-//        final int TimesheetID = 3;
-//        final int ProjectID = 4;
-//        final int WorkPackage = 5;
-//        final int Notes = 1;
-//        final int HoursForWeek = 2;
-//
-//        Connection connection = null;
-//        PreparedStatement stmt = null;
-//        try {
-//            try {
-//                connection = dataSource.getConnection();
-//                try {
-//                    stmt = connection
-//                            .prepareStatement("INSERT INTO UPDATE TimesheetRows " + "SET Notes = ?, HoursForWeek = ? "
-//                                    + "WHERE TimesheetId = ? " + "AND ProjectID = ? AND WorkPackage = ?");
-//                    stmt.setInt(TimesheetID, timesheetId);
-//                    stmt.setInt(ProjectID, timesheetRow.getProjectID());
-//                    stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
-//                    stmt.setString(Notes, timesheetRow.getNotes());
-//                    stmt.setString(HoursForWeek, stringifyWeeklyHours(timesheetRow.getHoursForWeek()));
-//                    stmt.executeUpdate();
-//                } finally {
-//                    if (stmt != null) {
-//                        stmt.close();
-//                    }
-//                }
-//            } finally {
-//                if (connection != null) {
-//                    connection.close();
-//                }
-//            }
-//        } catch (final SQLException ex) {
-//            System.out.println("Error in getAll");
-//            ex.printStackTrace();
-//        }
-//    }
+    /**
+     * Creating a Timesheet object and adding it to the collection.
+     *
+     * @throws SQLException
+     */
+    public void create(Integer timesheetId, TimesheetRow timesheetRow) throws SQLException {
+        final int TimesheetID = 1;
+        final int ProjectID = 2;
+        final int WorkPackage = 3;
+        final int Notes = 4;
+        final int HoursForWeek = 5;
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("INSERT INTO TimesheetRows VALUES(?, ?, ?, ?, ?)");
+                    stmt.setInt(TimesheetID, timesheetId);
+                    stmt.setInt(ProjectID, timesheetRow.getProjectID());
+                    stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
+                    stmt.setString(Notes, timesheetRow.getNotes());
+                    stmt.setString(HoursForWeek, stringifyWeeklyHours(timesheetRow.getHoursForWeek()));
+                    stmt.addBatch();
+                    stmt.clearParameters();
+                    stmt.executeUpdate();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+    }
+
+    /**
+     * Creating a Timesheet object and adding it to the collection.
+     *
+     * @throws SQLException
+     */
+    public void update(Integer timesheetId, List<TimesheetRow> timesheetRows) throws SQLException {
+        final int HoursForWeek = 1;
+        final int Notes = 2;
+        final int ProjectID = 3;
+        final int WorkPackage = 4;
+        final int TimesheetID = 5;
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("UPDATE TimesheetRows "
+                            + "SET HoursForWeek=?, Notes=?, ProjectID=?, WorkPackage=? " + "WHERE TimesheetId = ?");
+                    for (final TimesheetRow timesheetRow : timesheetRows) {
+                        stmt.setInt(TimesheetID, timesheetId);
+                        stmt.setInt(ProjectID, timesheetRow.getProjectID());
+                        stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
+                        stmt.setString(Notes, timesheetRow.getNotes());
+                        stmt.setString(HoursForWeek, stringifyWeeklyHours(timesheetRow.getHoursForWeek()));
+                        stmt.addBatch();
+                        stmt.clearParameters();
+                    }
+                    stmt.executeBatch();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+    }
 
     private static BigDecimal[] convertToWeeklyHours(String hours) {
         final String[] temp = hours.split(",");
