@@ -39,7 +39,7 @@ public class Employees {
      */
     public Employees() {
         employees = new ArrayList<>();
-        employees.add(new Employee(1234, "Bruce Link", "bdlink"));
+        employees.add(new Employee(1, "Bruce Link", "bdlink"));
     }
 
 }

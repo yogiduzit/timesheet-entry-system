@@ -29,7 +29,7 @@ public class CredentialsList {
     public CredentialsList() {
         allCredentials = new ArrayList<Credentials>();
         allCredentials.add(new Credentials("bdlink", "password"));
-        allCredentials.get(0).setEmpNumber(1234);
+        allCredentials.get(0).setEmpNumber(1);
     }
 
     /**

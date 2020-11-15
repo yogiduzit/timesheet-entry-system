@@ -33,12 +33,12 @@ public class Admins {
      */
     public Admins() {
         admins = new ArrayList<>();
-        admins.add(new Admin(new Employee(1234, "Bruce Link", "bdlink")));
+        admins.add(new Admin(new Employee(1, "Bruce Link", "bdlink")));
     }
 
     /**
      * Getting the adminstrators.
-     * 
+     *
      * @return admins
      */
     public List<Admin> getAdmins() {

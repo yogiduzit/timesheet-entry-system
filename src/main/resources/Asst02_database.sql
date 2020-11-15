@@ -54,10 +54,15 @@ INSERT INTO Credentials VALUES (3, "sungna", "sung");
 
 DROP TABLE IF EXISTS Timesheets;
 CREATE TABLE Timesheets(
-    EmpNo INT(5) UNIQUE,
-    EndWeek DATE NOT NULL UNIQUE,
-    TimesheetID INT(5) NOT NULL UNIQUE,
-    CONSTRAINT PKTimesheet PRIMARY KEY (EmpNo, EndWeek)
+    EmpNo INT(5) NOT NULL,
+    EndWeek DATE NOT NULL,
+    TimesheetID INT(5) NOT NULL UNIQUE AUTO_INCREMENT,
+    CONSTRAINT PKTimesheet PRIMARY KEY (EmpNo, EndWeek),
+    CONSTRAINT FKTimesheetEmpNo
+        FOREIGN KEY (EmpNo)
+            REFERENCES Employees (EmpNo)
+            ON UPDATE CASCADE 
+            ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS TimesheetRows;

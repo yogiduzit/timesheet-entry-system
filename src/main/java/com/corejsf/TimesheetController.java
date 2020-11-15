@@ -8,13 +8,12 @@ import java.util.List;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.access.TimesheetManager;
+import com.corejsf.access.TimesheetRowManager;
 import com.corejsf.model.timesheet.Timesheet;
 
 /**
@@ -39,6 +38,8 @@ public class TimesheetController implements Serializable {
     @Inject
     private EmployeeManager empManager;
 
+    @Inject
+    private TimesheetRowManager rowManager;
     /**
      * Injecting the conversation scope.
      */
@@ -79,6 +80,13 @@ public class TimesheetController implements Serializable {
      * @return the timesheets
      */
     public List<Timesheet> getTimesheets() {
+        if (timesheets == null) {
+            if (empManager.isAdminLogin()) {
+                timesheets = manager.getTimesheets();
+            } else {
+                timesheets = manager.getTimesheets(empManager.getCurrentEmployee().getEmpNumber());
+            }
+        }
         return timesheets;
     }
 
@@ -126,7 +134,9 @@ public class TimesheetController implements Serializable {
      * @return route to the view
      */
     public String prepareView(Timesheet t) {
-        conversation.end();
+        if (!conversation.isTransient()) {
+            conversation.end();
+        }
         if (t.getEmployee().getEmpNumber() != empManager.getCurrentEmployee().getEmpNumber()) {
             if (empManager.isAdminLogin()) {
                 editTimesheet = new EditableTimesheet(true, t);
@@ -150,7 +160,7 @@ public class TimesheetController implements Serializable {
         if (empManager.isAdminLogin()) {
             timesheets = manager.getTimesheets();
         } else {
-            timesheets = manager.getTimesheets(empManager.getCurrentEmployee());
+            timesheets = manager.getTimesheets(empManager.getCurrentEmployee().getEmpNumber());
         }
         return "/timesheet/list";
     }
@@ -177,17 +187,9 @@ public class TimesheetController implements Serializable {
      */
     public String onCreate() {
         editTimesheet.getTimesheet().setEmployee(empManager.getCurrentEmployee());
+        manager.insert(editTimesheet.getTimesheet());
+        rowManager.upsert(editTimesheet.getTimesheet().getId(), editTimesheet.getTimesheet().getDetails());
 
-        for (final Timesheet t : manager.getTimesheets(empManager.getCurrentEmployee())) {
-            if (t.getEndWeek().equals(editTimesheet.getTimesheet().getEndWeek())) {
-                final FacesContext context = FacesContext.getCurrentInstance();
-                context.addMessage(null,
-                        new FacesMessage("A timesheet with same end week already exists. Please try again"));
-                return null;
-            }
-        }
-
-        manager.addTimesheet(editTimesheet.getTimesheet());
         editTimesheet = null;
         conversation.end();
         return prepareList();
@@ -199,6 +201,9 @@ public class TimesheetController implements Serializable {
      * @return directory to list of timesheets
      */
     public String onEdit() {
+        manager.merge(editTimesheet.getTimesheet());
+        rowManager.upsert(editTimesheet.getTimesheet().getId(), editTimesheet.getTimesheet().getDetails());
+
         editTimesheet = null;
         conversation.end();
         return prepareList();

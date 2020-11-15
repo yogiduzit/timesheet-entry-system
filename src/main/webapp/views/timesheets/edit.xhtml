@@ -20,10 +20,10 @@
 					<div class="timesheet-weekend-container">
 						<div class="timesheet-weekend-input-container">
 							<p class="timesheet-weekend-label">#{msgs['timesheet.weekEnding']}</p>
-							<h:inputText id="weekend" value="#{timesheetController.editTimesheet.timesheet.endWeek}"
+							<h:outputText id="weekend" value="#{timesheetController.editTimesheet.timesheet.endWeek}"
 								styleClass="timesheet-weekend-input">
 								<f:convertDateTime type="localDate" />
-							</h:inputText>
+							</h:outputText>
 						</div>
 						<h:message for="weekend" styleClass="weekend-errors" />
 					</div>
