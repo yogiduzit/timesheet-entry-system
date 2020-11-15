@@ -30,7 +30,7 @@ public class EmployeeManagers implements Serializable {
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
     
-    public Employee find(int num) {
+    public Employee find(String username) {
         Connection connection = null;
         Statement stmt = null;
         try {
@@ -39,7 +39,7 @@ public class EmployeeManagers implements Serializable {
                 try {
                     stmt = connection.createStatement();
                     ResultSet result = stmt.executeQuery(
-                            "SELECT * FROM Employees where EmpNo = '" + num + "'");
+                            "SELECT * FROM Employees where EmpUserName = '" + username + "'");
                     if (result.next()) {
                         return new Employee(result.getInt("EmpNo"),
                                 result.getString("EmpName"),
@@ -58,7 +58,7 @@ public class EmployeeManagers implements Serializable {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("Error in find " + num);
+            System.out.println("Error in find " + username);
             ex.printStackTrace();
             return null;
         }

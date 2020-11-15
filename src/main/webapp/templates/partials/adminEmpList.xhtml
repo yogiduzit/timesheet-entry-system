@@ -14,7 +14,7 @@
 			<h2 id="employeeListHeading">#{msgs['employee.list']}</h2>
 			<h:form>
 				<h:dataTable id="employee-table"
-					value="#{employeeListForm.list}" var="e" styleClass="employee-list-table" headerClass="timesheet-table-header"
+					value="#{employeeController.list}" var="e" styleClass="employee-list-table" headerClass="timesheet-table-header"
 				rowClasses="timesheet-table-row">
 					<h:column>
 						<f:facet name="header">#{msgs['employee.empNum']}</f:facet>
@@ -33,13 +33,13 @@
 
 					<h:column>
 						<h:commandButton
-							action="#{employeeController.prepareEdit(employee.username)}"
+							action="#{employeeController.prepareEdit(e.employee.username)}"
 							value="#{msgs.editBtn}" styleClass="btn-secondary" />
 					</h:column>
 
 					<h:column>
 						<h:commandButton
-							action="#{employeeController.deleteRow(s)}"
+							action="#{employeeController.deleteRow(e)}"
 							value="#{msgs.deleteBtn}" styleClass="btn-secondary" />
 					</h:column>
 

@@ -50,44 +50,44 @@ public class EmployeeController implements Serializable {
      */
     private Conversation conversation;
     
-    @Inject EmployeeManagers empManagers;
+    @Inject EmployeeManagers employeeManager;
 
     /**
      * Represents an editable timesheet
      */
     private EditableEmployee editEmployee;
     
-    List<EditableEmployee> list;
+    List<EditableEmployee> empList;
     
     public List<EditableEmployee> getList() {
-        if (list == null) {
+        if (empList == null) {
             refreshList();
         }
-        return list;
+        return empList;
     }
     
     public void refreshList() {
-        Employee[] employees = empManagers.getAll();
-        list = new ArrayList<EditableEmployee>();
+        Employee[] employees = employeeManager.getAll();
+        empList = new ArrayList<EditableEmployee>();
         for (int i = 0; i < employees.length; i++) {
-            list.add(new EditableEmployee(employees[i]));
+            empList.add(new EditableEmployee(employees[i]));
         }
     }
     
     public void setList(List<EditableEmployee> es) {
-        list = es;
+        empList = es;
     }
     
     public String deleteRow(EditableEmployee e) {
-        empManagers.remove(e.getEmployee());
-        list.remove(e);
+        employeeManager.remove(e.getEmployee());
+        refreshList();
         return null;
     }
     
     public String save() {
-        for (EditableEmployee e : list) {
+        for (EditableEmployee e : empList) {
             if (e.getEditable()) {
-                empManagers.merge(e.getEmployee());
+                employeeManager.merge(e.getEmployee());
                 e.setEditable(false);
             }
         }
@@ -107,6 +107,7 @@ public class EmployeeController implements Serializable {
         if (!empManager.isAdminLogin()) {
             return null;
         }
+        refreshList();
         return "/employee/list";
     }
 
@@ -139,7 +140,7 @@ public class EmployeeController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        final Employee employee = empManager.getEmployee(username);
+        final Employee employee = employeeManager.find(username);
         if (employee == null) {
             return null;
         }
@@ -181,20 +182,8 @@ public class EmployeeController implements Serializable {
      * @return route to list employees
      */
     public String onCreate() {
-        try {
-            empManager.addEmployee(editEmployee.getEmployee());
-        } catch (final IllegalArgumentException ex) {
-            final FacesContext context = FacesContext.getCurrentInstance();
-            context.addMessage(null, new FacesMessage(ex.getLocalizedMessage()));
-            return null;
-        }
-
-        editEmployee.getCredentials().setEmpNumber(editEmployee.getEmployee().getEmpNumber());
-        editEmployee.getCredentials().setUsername(editEmployee.getEmployee().getUsername());
-
-        credentialsManager.add(editEmployee.getCredentials());
-        editEmployee = null;
-        conversation.end();
+        employeeManager.persist(this.editEmployee.getEmployee());
+        refreshList();
         return "/employee/list";
     }
 
@@ -204,9 +193,8 @@ public class EmployeeController implements Serializable {
      * @return the route to list employees
      */
     public String onEdit() {
-        editEmployee.getCredentials().setEmpNumber(editEmployee.getEmployee().getEmpNumber());
-        editEmployee.getCredentials().setUsername(editEmployee.getEmployee().getUsername());
-        editEmployee = null;
+        employeeManager.merge(this.editEmployee.getEmployee());
+        refreshList();
         conversation.end();
         return "/employee/list";
     }
