@@ -32,18 +32,19 @@ public class EmployeeManagers implements Serializable {
     
     public Employee find(String username) {
         Connection connection = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
             try {
                 connection = dataSource.getConnection();
                 try {
-                    stmt = connection.createStatement();
-                    ResultSet result = stmt.executeQuery(
-                            "SELECT * FROM Employees where EmpUserName = '" + username + "'");
-                    if (result.next()) {
+                    stmt = connection.prepareStatement("SELECT * FROM "
+                            + "Employees WHERE EmpUserName = ?");
+                    stmt.setString(1, username);
+                    final ResultSet result = stmt.executeQuery();
+                    if(result.next()) {
                         return new Employee(result.getInt("EmpNo"),
                                 result.getString("EmpName"),
-                                result.getString("EmpUserName"));
+                                result.getString("EmpUserName"));        
                     } else {
                         return null;
                     }

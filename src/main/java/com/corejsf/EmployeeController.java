@@ -74,27 +74,11 @@ public class EmployeeController implements Serializable {
         }
     }
     
-    public void setList(List<EditableEmployee> es) {
-        empList = es;
-    }
-    
     public String deleteRow(EditableEmployee e) {
         employeeManager.remove(e.getEmployee());
         refreshList();
         return null;
     }
-    
-    public String save() {
-        for (EditableEmployee e : empList) {
-            if (e.getEditable()) {
-                employeeManager.merge(e.getEmployee());
-                e.setEditable(false);
-            }
-        }
-        return null;
-    }
-    
-    
 
     /**
      *
