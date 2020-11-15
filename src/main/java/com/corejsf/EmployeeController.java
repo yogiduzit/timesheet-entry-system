@@ -4,6 +4,8 @@
 package com.corejsf;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
@@ -14,6 +16,7 @@ import javax.inject.Named;
 
 import com.corejsf.access.CredentialsManager;
 import com.corejsf.access.EmployeeManager;
+import com.corejsf.access.EmployeeManagers;
 import com.corejsf.model.employee.Employee;
 
 /**
@@ -46,11 +49,36 @@ public class EmployeeController implements Serializable {
      * Injected conversation
      */
     private Conversation conversation;
+    
+    @Inject EmployeeManagers employeeManager;
 
     /**
      * Represents an editable timesheet
      */
     private EditableEmployee editEmployee;
+    
+    List<EditableEmployee> empList;
+    
+    public List<EditableEmployee> getList() {
+        if (empList == null) {
+            refreshList();
+        }
+        return empList;
+    }
+    
+    public void refreshList() {
+        Employee[] employees = employeeManager.getAll();
+        empList = new ArrayList<EditableEmployee>();
+        for (int i = 0; i < employees.length; i++) {
+            empList.add(new EditableEmployee(employees[i]));
+        }
+    }
+    
+    public String deleteRow(EditableEmployee e) {
+        employeeManager.remove(e.getEmployee());
+        refreshList();
+        return null;
+    }
 
     /**
      *
@@ -63,6 +91,7 @@ public class EmployeeController implements Serializable {
         if (!empManager.isAdminLogin()) {
             return null;
         }
+        refreshList();
         return "/employee/list";
     }
 
@@ -95,7 +124,7 @@ public class EmployeeController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        final Employee employee = empManager.getEmployee(username);
+        final Employee employee = employeeManager.find(username);
         if (employee == null) {
             return null;
         }
@@ -137,20 +166,8 @@ public class EmployeeController implements Serializable {
      * @return route to list employees
      */
     public String onCreate() {
-        try {
-            empManager.addEmployee(editEmployee.getEmployee());
-        } catch (final IllegalArgumentException ex) {
-            final FacesContext context = FacesContext.getCurrentInstance();
-            context.addMessage(null, new FacesMessage(ex.getLocalizedMessage()));
-            return null;
-        }
-
-        editEmployee.getCredentials().setEmpNumber(editEmployee.getEmployee().getEmpNumber());
-        editEmployee.getCredentials().setUsername(editEmployee.getEmployee().getUsername());
-
-        credentialsManager.add(editEmployee.getCredentials());
-        editEmployee = null;
-        conversation.end();
+        employeeManager.persist(this.editEmployee.getEmployee());
+        refreshList();
         return "/employee/list";
     }
 
@@ -160,9 +177,8 @@ public class EmployeeController implements Serializable {
      * @return the route to list employees
      */
     public String onEdit() {
-        editEmployee.getCredentials().setEmpNumber(editEmployee.getEmployee().getEmpNumber());
-        editEmployee.getCredentials().setUsername(editEmployee.getEmployee().getUsername());
-        editEmployee = null;
+        employeeManager.merge(this.editEmployee.getEmployee());
+        refreshList();
         conversation.end();
         return "/employee/list";
     }

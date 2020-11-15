@@ -3,8 +3,8 @@ CREATE DATABASE timesheet_entry_system;
 
 CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'admin';
 CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'admin';
-GRANT ALL ON inventory.* TO 'admin'@'localhost';
-GRANT ALL ON inventory.* TO 'admin'@'%';
+GRANT ALL ON timesheet_entry_system.* TO 'admin'@'localhost';
+GRANT ALL ON timesheet_entry_system.* TO 'admin'@'%';
 
 USE timesheet_entry_system;
 
@@ -54,15 +54,10 @@ INSERT INTO Credentials VALUES (3, "sungna", "sung");
 
 DROP TABLE IF EXISTS Timesheets;
 CREATE TABLE Timesheets(
-    EmpNo INT(5) NOT NULL UNIQUE,
+    EmpNo INT(5) UNIQUE,
     EndWeek DATE NOT NULL UNIQUE,
     TimesheetID INT(5) NOT NULL UNIQUE,
-    CONSTRAINT PKTimesheet PRIMARY KEY (EmpNo, EndWeek),
-    CONSTRAINT FKTimesheetEmpNo
-        FOREIGN KEY (EmpNo)
-            REFERENCES Employees (EmpNo)
-            ON UPDATE CASCADE 
-            ON DELETE CASCADE
+    CONSTRAINT PKTimesheet PRIMARY KEY (EmpNo, EndWeek)
 );
 
 DROP TABLE IF EXISTS TimesheetRows;
@@ -82,6 +77,7 @@ INSERT INTO Timesheets VALUES (1, DATE'2020-11-13', 1);
 INSERT INTO Timesheets VALUES (2, DATE'2020-11-20', 2);
 INSERT INTO Timesheets VALUES (3, DATE'2020-11-27', 3);
 
-INSERT INTO TimesheetRows VALUES (1, 142, "142", "Redo project", "1,0,5,7,0,0,0 ");
+INSERT INTO TimesheetRows VALUES (1, 142, "142", "Redo project", "1,0,5,7,0,0,0");
 INSERT INTO TimesheetRows VALUES (1, 142, "143", "Excellence", "5,5,5,0,0,0,8");
 INSERT INTO TimesheetRows VALUES (2, 100, "150", "Edit some parts", "8,8,8,0,0,0,4");
+
