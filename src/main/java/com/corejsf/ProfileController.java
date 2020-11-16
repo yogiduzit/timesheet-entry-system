@@ -77,11 +77,18 @@ public class ProfileController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        final Employee employee = empManager.getCurrentEmployee();
-        if (employee == null) {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        Employee employee;
+        try {
+            employee = empManager.getCurrentEmployee();
+            if (employee == null) {
+                throw new Exception("Could not find current employee! Please login again");
+            }
+            credentials = credentialsManager.find(employee.getEmpNumber());
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
             return null;
         }
-        credentials = credentialsManager.getCredentials(employee.getEmpNumber());
         editEmployee = new EditableEmployee(employee, true);
         return "/employee/profile";
     }
@@ -111,6 +118,12 @@ public class ProfileController implements Serializable {
 
         credentials.setUsername(editEmployee.getEmployee().getUsername());
         credentials.setPassword(newPassword);
+        try {
+            credentialsManager.merge(credentials);
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            return null;
+        }
         conversation.end();
         return "/timesheet/list";
     }

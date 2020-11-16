@@ -14,9 +14,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.corejsf.access.CredentialsManager;
 import com.corejsf.access.EmployeeManager;
-import com.corejsf.access.EmployeeManagers;
 import com.corejsf.model.employee.Employee;
 
 /**
@@ -34,48 +32,50 @@ public class EmployeeController implements Serializable {
 
     @Inject
     /**
-     * Provides access to employees
-     */
-    private EmployeeManager empManager;
-
-    @Inject
-    /**
-     * Provides access to credentials
-     */
-    private CredentialsManager credentialsManager;
-
-    @Inject
-    /**
      * Injected conversation
      */
     private Conversation conversation;
-    
-    @Inject EmployeeManagers employeeManager;
+
+    @Inject
+    private EmployeeManager empManager;
 
     /**
      * Represents an editable timesheet
      */
     private EditableEmployee editEmployee;
-    
+
     List<EditableEmployee> empList;
-    
+
     public List<EditableEmployee> getList() {
         if (empList == null) {
             refreshList();
         }
         return empList;
     }
-    
+
     public void refreshList() {
-        Employee[] employees = employeeManager.getAll();
+        final FacesContext context = FacesContext.getCurrentInstance();
+        Employee[] employees;
+        try {
+            employees = empManager.getAll();
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            return;
+        }
         empList = new ArrayList<EditableEmployee>();
         for (int i = 0; i < employees.length; i++) {
             empList.add(new EditableEmployee(employees[i]));
         }
     }
-    
-    public String deleteRow(EditableEmployee e) {
-        employeeManager.remove(e.getEmployee());
+
+    public String deleteRow(EditableEmployee emp) {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            empManager.remove(emp.getEmployee());
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+        }
+
         refreshList();
         return null;
     }
@@ -88,9 +88,15 @@ public class EmployeeController implements Serializable {
      * @return the route to list of employees
      */
     public String prepareList() {
-        if (!empManager.isAdminLogin()) {
-            return null;
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (!empManager.isAdminLogin()) {
+                return null;
+            }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
         }
+
         refreshList();
         return "/employee/list";
     }
@@ -103,8 +109,13 @@ public class EmployeeController implements Serializable {
      * @return the route to create employees page
      */
     public String prepareCreate() {
-        if (!empManager.isAdminLogin()) {
-            return null;
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (!empManager.isAdminLogin()) {
+                return null;
+            }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
         }
         if (conversation.isTransient()) {
             conversation.begin();
@@ -121,13 +132,21 @@ public class EmployeeController implements Serializable {
      * @return the route to edit employees
      */
     public String prepareEdit(String username) {
+        final FacesContext context = FacesContext.getCurrentInstance();
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        final Employee employee = employeeManager.find(username);
-        if (employee == null) {
+        Employee employee;
+        try {
+            employee = empManager.find(username);
+            if (employee == null) {
+                throw new Exception("Could not find employee with username: " + username + " ! Please try again");
+            }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
             return null;
         }
+
         editEmployee = new EditableEmployee(employee, true);
         return "/employee/edit";
     }
@@ -140,24 +159,22 @@ public class EmployeeController implements Serializable {
      * @return the route to view employees
      */
     public String prepareView(String username) {
+        final FacesContext context = FacesContext.getCurrentInstance();
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        final Employee employee = empManager.getEmployee(username);
-        if (employee == null) {
+        Employee employee;
+        try {
+            employee = empManager.find(username);
+            if (employee == null) {
+                throw new Exception("Could not find employee with username: " + username + " ! Please try again");
+            }
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
             return null;
         }
         editEmployee = new EditableEmployee(employee, false);
         return "/employee/view";
-    }
-
-    public String prepareDelete(String username) {
-        final Employee employee = empManager.getEmployee(username);
-        if (employee == null) {
-            return null;
-        }
-        empManager.deleteEmployee(employee);
-        return null;
     }
 
     /**
@@ -166,7 +183,13 @@ public class EmployeeController implements Serializable {
      * @return route to list employees
      */
     public String onCreate() {
-        employeeManager.persist(this.editEmployee.getEmployee());
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            empManager.persist(editEmployee.getEmployee());
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+        }
+
         refreshList();
         return "/employee/list";
     }
@@ -177,7 +200,12 @@ public class EmployeeController implements Serializable {
      * @return the route to list employees
      */
     public String onEdit() {
-        employeeManager.merge(this.editEmployee.getEmployee());
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            empManager.merge(editEmployee.getEmployee());
+        } catch (final Exception e) {
+            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+        }
         refreshList();
         conversation.end();
         return "/employee/list";
