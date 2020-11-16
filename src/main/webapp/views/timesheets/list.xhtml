@@ -21,17 +21,17 @@
 					<ui:repeat value="#{timesheetController.timesheets}" var="timesheet">
 						<div class="timesheet-container">
 							<div class="timesheet-data">
-								<h2 class="timesheet-week-number">#{msgs['timesheet.week']}
-									#{timesheet.weekNumber}</h2>
-								<h2 class="timesheet-week-end">
+								<h4 class="timesheet-week-number">#{msgs['timesheet.week']}
+									#{timesheet.weekNumber}</h4>
+								<h4 class="timesheet-week-end">
 									<h:outputText value="#{timesheet.endWeek}"
 										styleClass="timesheet-weekend-input">
 										<f:convertDateTime type="localDate" />
 									</h:outputText>
-								</h2>
+								</h4>
 
-								<h2 class="timesheet-total-hours">#{msgs['timesheet.totalHours']}:
-									#{timesheet.totalHours}</h2>
+								<h4 class="timesheet-total-hours">#{msgs['timesheet.totalHours']}:
+									#{timesheet.totalHours}</h4>
 							</div>
 							<div class="timesheet-buttons-container">
 								<h:form styleClass="timesheet-buttons">
