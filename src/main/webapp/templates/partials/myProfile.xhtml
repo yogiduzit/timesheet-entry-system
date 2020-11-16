@@ -3,7 +3,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 	<h:outputStylesheet library="css" name="style.css" />
@@ -17,19 +18,19 @@
 				</div>
 
 				<div class="employee-input-container">
-					<h:inputText class="input-employee" value="#{profileController.editEmployee.employee.username}"
-						a:placeholder="Username:" />
-
-					<h:inputSecret class="input-employee" value="#{profileController.oldPassword}"
-						a:placeholder="Old Password:" />
-					<h:inputSecret class="input-employee" value="#{profileController.newPassword}"
-						a:placeholder="New Password:" />
-					<h:inputSecret class="input-employee" value="#{profileController.confirmNewPassword}"
-						a:placeholder="Confirm Password:" />
+					<h:outputText value="#{msgs['credentials.username']}" />
+					
+					<p:inputText class="input-employee" value="#{profileController.editEmployee.employee.username}"/>
+					<h:outputText value="#{msgs.oldPassword}" />
+					<p:password class="input-employee" value="#{profileController.oldPassword}"/>
+					<h:outputText value="#{msgs.newPassword}" />
+					<p:password class="input-employee" value="#{profileController.newPassword}" feedback="true" />
+					<h:outputText value="#{msgs.confirmPassword}" />
+					<p:password class="input-employee" value="#{profileController.confirmNewPassword}" feedback="true"/>
 				</div>
 
 				<div class="create-employee-btn-container">
-					<h:commandButton class="btn-secondary" action="#{profileController.onSaveProfile()}"
+					<h:commandButton class="btn-primary" action="#{profileController.onSaveProfile()}"
 						value="#{msgs.saveBtn}" />
 				</div>
 

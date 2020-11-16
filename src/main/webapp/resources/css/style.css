@@ -4,16 +4,15 @@
 }
 
 body {
-	font-size: 10px;
 	font-family: Montserrat, sans-serif;
 	font-weight: regular;
-	min-height:100%;
-	display:flex;
-	flex-direction:column;
-	overflow:hidden;
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 }
 
-.empSidebar{
+.empSidebar {
 	height: 100%;
 	border-right: 1px solid;
 }
@@ -21,7 +20,7 @@ body {
 .main-container {
 	width: 100vw;
 	height: 90vh;
-	display:flex;
+	display: flex;
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
@@ -36,7 +35,6 @@ body {
 	color: 30343F;
 	height: 10vh;
 	padding: 0 10px;
-	
 }
 
 .logo-container {
@@ -53,16 +51,16 @@ body {
 	color: #fff;
 	cursor: pointer;
 	border-radius: 10px;
-	font-size: 1.5em;
+	font-size: 1.25em;
 }
 
 #img {
 	width: auto;
-	height: 40px;
+	height: 100px;
 }
 
 #profileImg {
-	height: 40px;
+	height: 80px;
 	width: auto;
 	margin-top: auto;
 	margin-bottom: auto;
@@ -70,18 +68,22 @@ body {
 
 .employee-sidebar-container {
 	display: flex;
-	padding-top: 5%;
+	padding-top: 7%;
 	flex-direction: column;
 	align-items: center;
 	height: 100%;
 	width: 10%;
 	color: #273469;
-	
+	font-size: 1.45em;
 }
 
 .employee-info-container {
 	display: flex;
 	align-items: center;
+}
+
+.employee-link-containter {
+	margin-top:30px;
 }
 
 .employee-credentials-container {
@@ -91,21 +93,31 @@ body {
 .employee-my-timesheet {
 	display: flex;
 	align-items: center;
+	padding-top: 20px;
 }
 
 .employee-create-timesheet {
 	display: flex;
 	align-items: center;
+	padding-top: 20px;
+}
+
+.employee-list {
+	display: flex;
+	align-items: center;
+	padding-top: 20px;
 }
 
 .employee-my-profile {
 	display: flex;
 	align-items: center;
+	padding-top: 20px;
 }
 
 .employee-create-employee {
 	display: flex;
 	align-items: center;
+	padding-top: 20px;
 }
 
 ul {
@@ -143,10 +155,11 @@ ul li img {
 }
 
 .form-container {
-	min-height: 50vh;
+	min-height: 60vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;
+	font-size:2em;
 }
 
 .employee-input-container {
@@ -154,7 +167,6 @@ ul li img {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	
 }
 
 .input-employee {
@@ -168,8 +180,8 @@ ul li img {
 }
 
 ::placeholder {
-  color: white;
-  opacity: 1;
+	color: white;
+	opacity: 1;
 }
 
 .create-employee-btn-container {
@@ -243,7 +255,8 @@ ul li img {
 }
 
 .timesheet-attr-input-container {
-	width: 10vw;
+	font-size: 1.25em;
+	width: 20vw;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -251,15 +264,12 @@ ul li img {
 
 .timesheet-attr-input {
 	flex: 1;
-	background-color: #273469;
-	color: white;
 	outline: none;
 	border: none;
 	border-radius: 5px;
 	height: 22.5px;
 	padding-left: 0.5em;
-	margin-left: 0.5rem;
-	
+	margin-left: 1em !important;
 }
 
 .timesheet-table-container {
@@ -336,7 +346,6 @@ ul li img {
 }
 
 /* Login */
-
 .username-input-container-login-input-container {
 	display: flex;
 	align-items: center;
@@ -361,8 +370,8 @@ ul li img {
 	outline: none;
 	border: none;
 	border-radius: 5px;
-	height: 22.5px;
-	padding-left: 0.5em;
+	height: 50px;
+	width: 300px;
 }
 
 .password-input {
@@ -371,8 +380,8 @@ ul li img {
 	outline: none;
 	border: none;
 	border-radius: 5px;
-	height: 22.5px;
-	padding-left:0.5em;
+	height: 50px;
+	width: 300px;
 }
 
 #createNewTimesheet {
@@ -388,8 +397,8 @@ ul li img {
 	color: #fff;
 	cursor: pointer;
 	border-radius: 10px;
-	font-size: 1.5em;
-	margin-left: 1rem;
+	font-size: 1.25em;
+	margin-left: 1.5em;
 }
 
 .timesheet-form {
@@ -397,7 +406,7 @@ ul li img {
 }
 
 .employee-list-container {
-	height:70vh;
+	height: 70vh;
 }
 
 #employeeListHeading {
@@ -405,6 +414,101 @@ ul li img {
 }
 
 .error-messages {
-	color:red;
+	color: red;
 	font-size: 1.5em;
 }
+
+#editBtn {
+	background-color: #273369;
+}
+
+#deleteBtn {
+	background-color: #273369;
+}
+
+.ui-datatable {
+	margin: 0 auto;
+	width: 80%;
+	
+}
+
+.employee-list-container {
+	font-size: 1.85em;
+}
+
+.ui-state-default {
+	background-color: #273369;
+	background-image: none !important;
+	color:white;
+	font-family: Montserrat, sans-serif !important;
+	font-weight: normal !important;
+}
+
+.ui-button {
+	background:liner-gradient-OFF !important;
+	background-image: none !important;
+	color:#F5F5F5 !important;
+	background-color: #273369 !important;
+}
+
+.navbar-container {
+	font-size: 1.25em;
+}
+
+.ui-datatable tbody td {
+	padding: 1em !important;
+}
+
+.ui-inputfield {
+	width: 100% !important;
+	background-color: #273369;
+	color: white;
+}
+
+.timesheet-form {
+	font-size: 1.5em;
+}
+
+.buttons-container {
+	font-size: 1em;
+	margin-top: 225px;
+}
+
+#create-table-heading {
+	font-size: 2.25em;
+}
+
+.input-employee {
+	padding: 15px !important;
+	width: 100% !important;
+}
+
+.login-page-heading {
+	font-size: 3em;
+}
+
+.login-form-container {
+	font-size:2em;
+}
+
+.timesheet-weekend-container {
+	font-size:1.5em;
+	width: 15vw;
+}
+
+.timesheet-weekend-input-container {
+	margin-bottom: 50px;
+}
+.edit-timesheet-header {
+	font-size: 2.25em;	
+}
+
+.all-timesheet-header {
+	font-size: 2.25em;
+}
+
+.view-timesheet-header {
+	font-size: 2.25em;
+}
+
+

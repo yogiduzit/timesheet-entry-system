@@ -2,7 +2,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 	<h:outputStylesheet library="css" name="style.css" />
@@ -15,25 +16,25 @@
 		<ui:define name="main">
 			<div class="main" id="main">
 				<h:messages styleClass="error-messages" layout="table" />
-				<h1 class = "login-page-heading">#{msgs['login.heading']}</h1>
+				<h1 class ="login-page-heading">#{msgs['login.heading']}</h1>
 				<div class="login-form-container">
 					<h:form styleClass="login-form">
 						<div class="username-container-login-container">
 							<div class="username-input-container-login-input-container">
 								<p class="username-label">#{msgs['credentials.username']}</p>
-								<h:inputText id="username" value="#{loginController.username}" styleClass="username-input login-input" />
+								<p:inputText id="username" value="#{loginController.username}" styleClass="username-input login-input" />
 							</div>
 							<h:message for="username" styleClass="username-errors"/>
 						</div>
 						<div class="password-container-login-container">
 							<div class="password-input-container-login-input-container">
 								<p class="password-label">#{msgs['credentials.password']}</p>
-								<h:inputSecret id="password" value="#{loginController.password}" styleClass="password-input login-input" />
+								<p:password id="password" value="#{loginController.password}" styleClass="password-input login-input" />
 							</div>
 							<h:message for="password" styleClass="password-errors"/>
 						</div>
 
-						<h:commandButton action="#{loginController.login()}" value="#{msgs.login}" styleClass="btn-secondary"/>
+						<h:commandButton action="#{loginController.login()}" value="#{msgs.login}" styleClass="btn-primary"/>
 
 					</h:form>
 				</div>

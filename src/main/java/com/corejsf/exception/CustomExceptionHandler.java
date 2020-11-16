@@ -53,7 +53,6 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
 
             // here you do what ever you want with exception
             try {
-
                 fc.addMessage(null, new FacesMessage(t.getLocalizedMessage()));
 
             } finally {

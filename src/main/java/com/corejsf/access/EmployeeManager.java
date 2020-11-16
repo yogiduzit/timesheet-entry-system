@@ -1,152 +1,345 @@
 package com.corejsf.access;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
+import javax.annotation.Resource;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.mail.AuthenticationFailedException;
+import javax.sql.DataSource;
 
-import com.corejsf.data.Admins;
-import com.corejsf.data.Employees;
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 import com.corejsf.model.employee.Employee;
 
 @Named("employeeManager")
 @ConversationScoped
-/**
- * This is the class called EmployeeManager that implements an interface called
- * EmployeeList.
- *
- * @author Sung Na and Yogesh Verma
- * @version 1.0
- *
- */
-public class EmployeeManager implements EmployeeList, Serializable {
+public class EmployeeManager implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static String TAG = "Employee";
 
     /**
-     * Variable for implementing serializable.
+     * Datasource for the project
      */
-    private static final long serialVersionUID = -8890730783815459598L;
+    @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
+    private DataSource dataSource;
 
+    @Inject
     /**
-     * Injecting Employees and Admins.
+     * Provides access to the credentials table in the datasource
      */
-    @Inject
-    private Employees dataSource;
-    @Inject
-    private Admins adminList;
-
-    /**
-     * Injecting the CredentialsManager.
-     */
-    @Inject
     private CredentialsManager credentialsManager;
 
+    @Inject
     /**
-     * Getting the employees through the list
+     * Provides access to messages in the message bundle
      */
-    @Override
-    public List<Employee> getEmployees() {
-        return dataSource.getEmployees();
-    }
+    private MessageProvider msgProvider;
+
+    @Inject
+    /**
+     * Provides access to the admin table in the datasource
+     */
+    private AdminManager adminManager;
 
     /**
-     * Overriding method to get the employee.
+     * Finds an employee by their username
+     *
+     * @param username, unique identifier for the Employee
+     * @return Employee POJO
+     * @throws SQLException
      */
-    @Override
-    public Employee getEmployee(String username) {
-        final List<Employee> employees = getEmployees();
-
-        for (final Employee e : employees) {
-            if (e.getUsername().equals(username)) {
-                return e;
+    public Employee find(String username) throws SQLException {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("SELECT * FROM " + "Employees WHERE EmpUserName = ?");
+                    stmt.setString(1, username);
+                    final ResultSet result = stmt.executeQuery();
+                    if (result.next()) {
+                        return new Employee(result.getInt("EmpNo"), result.getString("EmpName"),
+                                result.getString("EmpUserName"));
+                    } else {
+                        return null;
+                    }
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
             }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
-        return null;
     }
 
     /**
-     * Overriding method that gets the login combo.
+     * Finds an employee by their unique number
+     *
+     * @param empNo, the unique id of the employee
+     * @return Employee POJO
+     * @throws SQLException
      */
-    @Override
-    public Map<String, String> getLoginCombos() {
-
-        return null;
+    public Employee find(int empNo) throws SQLException {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("SELECT * FROM " + "Employees WHERE EmpNo = ?");
+                    stmt.setInt(1, empNo);
+                    final ResultSet result = stmt.executeQuery();
+                    if (result.next()) {
+                        return new Employee(result.getInt("EmpNo"), result.getString("EmpName"),
+                                result.getString("EmpUserName"));
+                    } else {
+                        return null;
+                    }
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
+        }
     }
 
     /**
-     * Overriding method that gets the current employee.
+     * Inserts an Employee record into the employees table
+     *
+     * @param employee, POJO representing an employee record
+     * @throws SQLException
      */
-    @Override
-    public Employee getCurrentEmployee() {
+    public void persist(Employee employee) throws SQLException {
+        final int empNo = 1;
+        final int empName = 2;
+        final int empUsername = 3;
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("INSERT INTO Employees " + "VALUES (?, ?, ?)");
+                    stmt.setInt(empNo, employee.getEmpNumber());
+                    stmt.setString(empName, employee.getFullName());
+                    stmt.setString(empUsername, employee.getUsername());
+                    stmt.executeUpdate();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
+        }
+    }
+
+    /**
+     * Updates an existing employee record in the employees table
+     *
+     * @param employee, POJO representing the employee record
+     * @throws SQLException
+     */
+    public void merge(Employee employee) throws SQLException {
+        final int empName = 1;
+        final int empUsername = 2;
+        final int empNo = 3;
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement(
+                            "UPDATE Employees " + "SET EmpName = ?, EmpUserName = ? " + "WHERE EmpNo = ?");
+                    stmt.setString(empName, employee.getFullName());
+                    stmt.setString(empUsername, employee.getUsername());
+                    stmt.setInt(empNo, employee.getEmpNumber());
+                    stmt.executeUpdate();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
+        }
+    }
+
+    /**
+     * Removes an employee record from the employees table in the datasource
+     *
+     * @param employee, Employee POJO
+     * @throws SQLException
+     */
+    public void remove(Employee employee) throws SQLException {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.prepareStatement("DELETE FROM Employees WHERE EmpNo = ?");
+                    stmt.setInt(1, employee.getEmpNumber());
+                    stmt.executeUpdate();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new SQLDataException(msgProvider.getValue("error.delete", new Object[] { TAG }));
+        }
+    }
+
+    /**
+     * Gets the list of all employee records in the table
+     *
+     * @return list of all employees
+     * @throws SQLException
+     */
+    public Employee[] getAll() throws SQLException {
+        final ArrayList<Employee> employees = new ArrayList<Employee>();
+        Connection connection = null;
+        Statement stmt = null;
+        try {
+            try {
+                connection = dataSource.getConnection();
+                try {
+                    stmt = connection.createStatement();
+                    final ResultSet result = stmt.executeQuery("SELECT * FROM Employees ORDER BY EmpNo");
+                    while (result.next()) {
+                        employees.add(new Employee(result.getInt("EmpNo"), result.getString("EmpName"),
+                                result.getString("EmpUserName")));
+                    }
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
+        }
+
+        final Employee[] subarray = new Employee[employees.size()];
+        return employees.toArray(subarray);
+    }
+
+    /**
+     * Verifies if the credentials of an employee match
+     *
+     * @param employee    the employee to be authenticated
+     * @param credentials credentials of the authenticating employee
+     * @return true, if credentials match
+     * @return false, otherwise
+     * @throws AuthenticationFailedException, if credentials don't match
+     * @throws SQLException
+     */
+    public boolean verifyUser(Employee employee, Credentials credentials)
+            throws AuthenticationFailedException, SQLException {
+        if (employee == null || credentials == null) {
+            return false;
+        }
+        final Credentials found = credentialsManager.find(employee.getEmpNumber());
+        if (found == null) {
+            throw new AuthenticationFailedException(msgProvider.getValue("error.authentication.unknownEmployee"));
+        }
+        if (!credentials.equals(found)) {
+            throw new AuthenticationFailedException(msgProvider.getValue("error.authentication.wrongCredentials"));
+        }
+        return true;
+    }
+
+    /**
+     * Gets the current employee
+     *
+     * @return Employee POJO
+     * @throws SQLException
+     */
+    public Employee getCurrentEmployee() throws SQLException {
         final FacesContext context = FacesContext.getCurrentInstance();
         final String username = (String) context.getExternalContext().getSessionMap().get("emp_no");
-        return getEmployee(username);
+        if (username == null) {
+            return null;
+        }
+        Employee current;
+        try {
+            current = find(username);
+        } catch (final SQLException e) {
+            throw new SQLException(e.getCause());
+        }
+        return current;
     }
 
     /**
-     * Overriding method that gets the admin.
-     */
-    @Override
-    public Employee getAdministrator() {
-        return adminList.getAdmins().get(0);
-    }
-
-    /**
-     * Boolean method that checks if the admin is logged in.
+     * Checks if the current employee is an admin
      *
-     * @return
+     * @return true, if admin is logged in
+     * @return false, otherwise
+     * @throws SQLException
      */
-    public Boolean isAdminLogin() {
+    public boolean isAdminLogin() throws SQLException {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final Boolean adminLogin = (Boolean) context.getExternalContext().getSessionMap().get("admin");
+        if (adminLogin != null) {
+            return adminLogin;
+        }
         final Employee currEmployee = getCurrentEmployee();
-        final Employee admin = getAdministrator();
-        if (admin == null || currEmployee == null) {
+        if (currEmployee == null) {
             return false;
         }
-        return currEmployee.getEmpNumber() == admin.getEmpNumber();
-    }
-
-    /**
-     * Overriding method that deletes the employee.
-     */
-    @Override
-    public void deleteEmployee(Employee userToDelete) {
-        if (getAdministrator().getUsername().equals(userToDelete.getUsername())) {
-            return;
+        final Employee admin = adminManager.find();
+        if (currEmployee.getUsername().equals(admin.getUsername())) {
+            context.getExternalContext().getSessionMap().put("admin", true);
+            return true;
         }
-        dataSource.getEmployees().remove(userToDelete);
+        return false;
     }
-
-    /**
-     * Overriding method that adds the employee.
-     */
-    @Override
-    public void addEmployee(Employee newEmployee) {
-        for (final Employee e : getEmployees()) {
-            if (e.getUsername().equals(newEmployee.getUsername())) {
-                throw new IllegalArgumentException("A user with the same username already exists");
-            }
-
-            if (e.getEmpNumber() == newEmployee.getEmpNumber()) {
-                throw new IllegalArgumentException("A user with the same employee number already exists");
-            }
-        }
-        dataSource.getEmployees().add(newEmployee);
-    }
-
-    /**
-     * Overriding method that verifies the user.
-     */
-    @Override
-    public boolean verifyUser(Employee employee, Credentials credentials) {
-        if (employee == null) {
-            return false;
-        }
-        final Credentials foundCredentials = credentialsManager.getCredentials(employee.getEmpNumber());
-        return credentials.equals(foundCredentials);
-    }
-
 }
