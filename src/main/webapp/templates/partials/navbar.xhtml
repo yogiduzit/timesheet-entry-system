@@ -2,7 +2,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 </h:head>
@@ -20,7 +21,7 @@
 			</div>
 			<div class="logout-container">
 				<h:form styleClass="logout-button">
-					<h:commandButton class="btn-primary logout-btn" action="#{loginController.logout()}"
+					<p:commandButton class="btn-primary logout-btn" action="#{loginController.logout()}"
 						value="#{msgs.logout}" />
 				</h:form>
 			</div>

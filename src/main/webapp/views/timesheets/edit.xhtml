@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 </h:head>
@@ -15,15 +16,15 @@
 		<ui:define name="main">
 			<div class="main">
 				<h:messages styleClass="error-messages" layout="table" />
-				<h2>#{msgs['timesheet.editTitle']}</h2>
+				<h2 class="edit-timesheet-header">#{msgs['timesheet.editTitle']}</h2>
 				<h:form class="timesheet-form">
 					<div class="timesheet-weekend-container">
 						<div class="timesheet-weekend-input-container">
 							<p class="timesheet-weekend-label">#{msgs['timesheet.weekEnding']}</p>
-							<h:inputText id="weekend" value="#{timesheetController.editTimesheet.timesheet.endWeek}"
+							<p:inputText id="weekend" value="#{timesheetController.editTimesheet.timesheet.endWeek}"
 								styleClass="timesheet-weekend-input">
 								<f:convertDateTime type="localDate" />
-							</h:inputText>
+							</p:inputText>
 						</div>
 						<h:message for="weekend" styleClass="weekend-errors" />
 					</div>
@@ -33,7 +34,7 @@
 						<h:commandButton action="#{timesheetController.onAddRow()}"
 							value="#{msgs['timesheet.addRow']}" styleClass="btn-primary" />
 						<h:commandButton action="#{timesheetController.onEdit()}"
-							value="#{msgs['timesheet.save']}"  styleClass="btn-primary"/>
+							value="#{msgs['timesheet.save']}"  styleClass="btn-create"/>
 					</div>
 				</h:form>
 			</div>

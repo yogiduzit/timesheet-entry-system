@@ -3,107 +3,108 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 </h:head>
 <h:body>
 	<ui:composition>
 		<div class="timesheet-table-container">
-			<h:dataTable id="timesheet-table" styleClass="timesheet-table"
+			<p:dataTable id="timesheet-table" styleClass="timesheet-table"
 				value="#{timesheetController.editTimesheet.timesheet.details}"
 				var="timesheetRow" headerClass="timesheet-table-header"
 				rowClasses="timesheet-table-row"
 				columnClasses="#{timesheetList.cellClasses}">
-				<h:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.project']}</f:facet>
 					<h:outputText value="#{timesheetRow.projectID}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.projectID}"
+					<p:inputText value="#{timesheetRow.projectID}"
 						rendered="#{timesheetController.editTimesheet.editable}" />
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.workPackage']}</f:facet>
 					<h:outputText value="#{timesheetRow.workPackage}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.workPackage}"
+					<p:inputText value="#{timesheetRow.workPackage}"
 						rendered="#{timesheetController.editTimesheet.editable}" />
-				</h:column>
-				<h:column rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}">
+				</p:column>
+				<p:column rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}">
 					<f:facet name="header">#{msgs['timesheetRow.total']}</f:facet>
 					<h:outputText value="#{timesheetRow.sum}" />
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.saturday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[0]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[0]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[0]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.sunday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[1]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[1]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[1]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.monday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[2]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[2]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[2]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.tuesday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[3]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[3]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[3]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.wednesday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[4]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[4]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[4]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.thursday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[5]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[5]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[5]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.friday']}</f:facet>
 					<h:outputText value="#{timesheetRow.hoursForWeek[6]}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.hoursForWeek[6]}"
+					<p:inputText value="#{timesheetRow.hoursForWeek[6]}"
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
-					</h:inputText>
-				</h:column>
-				<h:column>
+					</p:inputText>
+				</p:column>
+				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.comments']}</f:facet>
 					<h:outputText value="#{timesheetRow.notes}"
 						rendered="#{not timesheetController.editTimesheet.editable}" />
-					<h:inputText value="#{timesheetRow.notes}"
+					<p:inputText value="#{timesheetRow.notes}"
 						rendered="#{timesheetController.editTimesheet.editable}" />
-				</h:column>
-			</h:dataTable>
+				</p:column>
+			</p:dataTable>
 		</div>
 	</ui:composition>
 </h:body>

@@ -15,7 +15,7 @@
 		<ui:define name="main">
 			<div class="main">
 				<h:messages styleClass="error-messages" layout="table" />
-				<h2>#{msgs['allTimesheet']}</h2>
+				<h2 class="all-timesheet-header">#{msgs['allTimesheet']}</h2>
 				<div class="timesheets-container">
 
 					<ui:repeat value="#{timesheetController.timesheets}" var="timesheet">
