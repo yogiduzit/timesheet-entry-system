@@ -22,7 +22,7 @@
 			<div class="logout-container">
 				<h:form styleClass="logout-button">
 					<p:commandButton class="btn-primary logout-btn" action="#{loginController.logout()}"
-						value="#{msgs.logout}" />
+						value="#{msgs.logout}" rendered="#{loginController.authenticated}" />
 				</h:form>
 			</div>
 		</div>

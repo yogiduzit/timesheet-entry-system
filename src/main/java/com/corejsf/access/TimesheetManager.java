@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
@@ -129,6 +133,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
@@ -178,6 +185,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
@@ -223,6 +233,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
@@ -266,6 +279,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));

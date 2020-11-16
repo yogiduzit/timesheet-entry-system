@@ -4,6 +4,7 @@
 package com.corejsf.controller;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.List;
 
 import javax.enterprise.context.Conversation;
@@ -16,6 +17,7 @@ import javax.inject.Named;
 import com.corejsf.EditableTimesheet;
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.access.TimesheetManager;
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.timesheet.Timesheet;
 
 /**
@@ -45,6 +47,9 @@ public class TimesheetController implements Serializable {
      */
     @Inject
     private Conversation conversation;
+
+    @Inject
+    private MessageProvider msgProvider;
 
     /**
      * Represents the editable timesheet.
@@ -89,7 +94,7 @@ public class TimesheetController implements Serializable {
                     timesheets = manager.getTimesheets(empManager.getCurrentEmployee().getEmpNumber());
                 }
             } catch (final Exception e) {
-                context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
             }
 
         }
@@ -123,6 +128,9 @@ public class TimesheetController implements Serializable {
         }
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
+            if (t.getEndWeek().isBefore(new Date(System.currentTimeMillis()).toLocalDate())) {
+                throw new IllegalArgumentException(msgProvider.getValue("error.timesheet.oldTimesheetEdit"));
+            }
             if (t.getEmployee().getEmpNumber() != empManager.getCurrentEmployee().getEmpNumber()) {
                 if (empManager.isAdminLogin()) {
                     editTimesheet = new EditableTimesheet(true, t);
@@ -131,7 +139,8 @@ public class TimesheetController implements Serializable {
                 }
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
+            return null;
         }
 
         editTimesheet = new EditableTimesheet(true, t);
@@ -159,7 +168,8 @@ public class TimesheetController implements Serializable {
                 }
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
+            return null;
         }
         editTimesheet = new EditableTimesheet(false, t);
         return "/timesheet/view";
@@ -205,6 +215,7 @@ public class TimesheetController implements Serializable {
             manager.insert(editTimesheet.getTimesheet());
         } catch (final Exception e) {
             context.addMessage(null, new FacesMessage(e.getMessage()));
+            timesheets = null;
             return null;
         }
 
@@ -224,6 +235,7 @@ public class TimesheetController implements Serializable {
             manager.merge(editTimesheet.getTimesheet());
         } catch (final Exception e) {
             context.addMessage(null, new FacesMessage(e.getMessage()));
+            timesheets = null;
             return null;
         }
 
