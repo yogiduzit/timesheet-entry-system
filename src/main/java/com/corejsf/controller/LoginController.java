@@ -103,6 +103,7 @@ public class LoginController implements Serializable {
      */
     public String logout() {
         final FacesContext context = FacesContext.getCurrentInstance();
+        conversation.end();
         context.getExternalContext().invalidateSession();
         context.getExternalContext().getSessionMap().clear();
         return "logout";
