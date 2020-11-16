@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.corejsf;
+package com.corejsf.controller;
 
 import java.io.Serializable;
 
@@ -12,6 +12,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.corejsf.EditableEmployee;
 import com.corejsf.access.CredentialsManager;
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.messages.MessageProvider;

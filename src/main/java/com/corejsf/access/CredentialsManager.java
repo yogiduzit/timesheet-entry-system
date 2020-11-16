@@ -44,13 +44,17 @@ public class CredentialsManager implements Serializable {
     private DataSource dataSource;
 
     @Inject
+    /**
+     * Provides access to the messages from the message bundle
+     */
     private MessageProvider msgProvider;
 
     /**
      * Method to get the credentials by employee number
      *
-     * @param empNumber
-     * @return credentials
+     * @param empNumber, number of the employee whose credentials need to be found
+     * @return credentials, username and password of the employee
+     * @return null, if the emp does not exist
      * @throws SQLException
      */
     public Credentials find(int empNumber) throws SQLException {
@@ -86,6 +90,12 @@ public class CredentialsManager implements Serializable {
         return null;
     }
 
+    /**
+     * Adds a Credentials record to the Credentials table in the datasource
+     *
+     * @param credentials, credentials object containing username and password
+     * @throws SQLException
+     */
     public void insert(Credentials credentials) throws SQLException {
         final int EmpNo = 1;
         final int EmpUserName = 2;
@@ -118,6 +128,12 @@ public class CredentialsManager implements Serializable {
         }
     }
 
+    /**
+     * Updates an existing Credentials record in the datasource
+     *
+     * @param credentials, credentials object containing username and password
+     * @throws SQLException
+     */
     public void merge(Credentials credentials) throws SQLException {
         final int EmpUserName = 1;
         final int EmpPassword = 2;

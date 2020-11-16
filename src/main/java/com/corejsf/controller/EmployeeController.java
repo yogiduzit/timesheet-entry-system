@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.corejsf;
+package com.corejsf.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.corejsf.EditableEmployee;
 import com.corejsf.access.CredentialsManager;
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.messages.MessageProvider;
@@ -29,11 +30,14 @@ import com.corejsf.model.employee.Employee;
 public class EmployeeController implements Serializable {
 
     /**
-     *
+     * Serializable Id
      */
     private static final long serialVersionUID = 5825295337476934595L;
 
     @Inject
+    /**
+     * Provides messages from the message bundle
+     */
     private MessageProvider msgProvider;
 
     @Inject
@@ -43,9 +47,15 @@ public class EmployeeController implements Serializable {
     private Conversation conversation;
 
     @Inject
+    /**
+     * Provides access to employees table in datasource
+     */
     private EmployeeManager empManager;
 
     @Inject
+    /**
+     * Provides access to credentials table in datasource
+     */
     private CredentialsManager credManager;
 
     /**
@@ -53,8 +63,16 @@ public class EmployeeController implements Serializable {
      */
     private EditableEmployee editEmployee;
 
-    List<EditableEmployee> empList;
+    /**
+     * List of editable employees to be used in table
+     */
+    private List<EditableEmployee> empList;
 
+    /**
+     * Getter for editable employee list
+     *
+     * @return list of editable employees
+     */
     public List<EditableEmployee> getList() {
         if (empList == null) {
             refreshList();
@@ -62,6 +80,10 @@ public class EmployeeController implements Serializable {
         return empList;
     }
 
+    /**
+     * Requests the list of employees from employee manager and stores them in a
+     * list.
+     */
     public void refreshList() {
         final FacesContext context = FacesContext.getCurrentInstance();
         Employee[] employees;
@@ -78,6 +100,12 @@ public class EmployeeController implements Serializable {
         }
     }
 
+    /**
+     * Deletes an employee from the employees table
+     *
+     * @param emp, the employee to be deleted
+     * @return A string containing navigation url
+     */
     public String deleteRow(EditableEmployee emp) {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
@@ -229,7 +257,7 @@ public class EmployeeController implements Serializable {
             final Credentials credentials = new Credentials(editEmployee.getEmployee().getUsername(),
                     editEmployee.getCredentials().getPassword());
             credentials.setEmpNumber(editEmployee.getEmployee().getEmpNumber());
-            credManager.insert(credentials);
+            credManager.merge(credentials);
         } catch (final Exception e) {
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));

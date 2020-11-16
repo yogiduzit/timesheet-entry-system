@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.corejsf;
+package com.corejsf.controller;
 
 import java.io.Serializable;
 
@@ -33,6 +33,9 @@ public class LoginController implements Serializable {
     private static final long serialVersionUID = 6687823809360236313L;
 
     @Inject
+    /**
+     * Provides messages from the message bundle.
+     */
     private MessageProvider msgProvider;
 
     /**
