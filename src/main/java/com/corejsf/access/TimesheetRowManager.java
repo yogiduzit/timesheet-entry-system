@@ -5,15 +5,18 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.ConversationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.timesheet.TimesheetRow;
 
 @Named("rowManager")
@@ -31,12 +34,16 @@ public class TimesheetRowManager implements Serializable {
      * Variable for the serializable.
      */
     private static final long serialVersionUID = -1786252399378663291L;
+    private static String TAG = "TimesheeetRow";
 
     /**
      * Datasource for a project
      */
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
+
+    @Inject
+    private MessageProvider msgProvider;
 
     /**
      * Getting the Timesheets.
@@ -74,7 +81,7 @@ public class TimesheetRowManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw ex;
+            throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
         }
         return timesheetRows;
     }
@@ -120,7 +127,7 @@ public class TimesheetRowManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw ex;
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
         }
     }
 
@@ -163,7 +170,7 @@ public class TimesheetRowManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw ex;
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
         }
     }
 
@@ -209,7 +216,7 @@ public class TimesheetRowManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw ex;
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
 

@@ -15,7 +15,6 @@ import javax.inject.Named;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.access.TimesheetManager;
-import com.corejsf.access.TimesheetRowManager;
 import com.corejsf.model.timesheet.Timesheet;
 
 /**
@@ -40,8 +39,6 @@ public class TimesheetController implements Serializable {
     @Inject
     private EmployeeManager empManager;
 
-    @Inject
-    private TimesheetRowManager rowManager;
     /**
      * Injecting the conversation scope.
      */
@@ -176,17 +173,7 @@ public class TimesheetController implements Serializable {
         if (conversation.isTransient()) {
             conversation.begin();
         }
-        final FacesContext context = FacesContext.getCurrentInstance();
-        try {
-            if (empManager.isAdminLogin()) {
-                timesheets = manager.getTimesheets();
-            } else {
-                timesheets = manager.getTimesheets(empManager.getCurrentEmployee().getEmpNumber());
-            }
-        } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
-        }
-
+        getTimesheets();
         return "/timesheet/list";
     }
 
@@ -214,8 +201,7 @@ public class TimesheetController implements Serializable {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
             editTimesheet.getTimesheet().setEmployee(empManager.getCurrentEmployee());
-            final int timesheetId = manager.insert(editTimesheet.getTimesheet());
-            rowManager.create(timesheetId, editTimesheet.getTimesheet().getDetails());
+            manager.insert(editTimesheet.getTimesheet());
         } catch (final Exception e) {
             context.addMessage(null, new FacesMessage(e.getMessage()));
             return null;
@@ -235,7 +221,6 @@ public class TimesheetController implements Serializable {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
             manager.merge(editTimesheet.getTimesheet());
-            rowManager.update(editTimesheet.getTimesheet().getId(), editTimesheet.getTimesheet().getDetails());
         } catch (final Exception e) {
             context.addMessage(null, new FacesMessage(e.getMessage()));
             return null;

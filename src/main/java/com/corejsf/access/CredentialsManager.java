@@ -7,13 +7,16 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.ConversationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 
 /**
@@ -27,6 +30,8 @@ import com.corejsf.model.employee.Credentials;
 @ConversationScoped
 public class CredentialsManager implements Serializable {
 
+    private static String TAG = "Credential";
+
     /**
      * Variable for implementing Serialiable
      */
@@ -37,6 +42,9 @@ public class CredentialsManager implements Serializable {
      */
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
+
+    @Inject
+    private MessageProvider msgProvider;
 
     /**
      * Method to get the credentials by employee number
@@ -73,7 +81,7 @@ public class CredentialsManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
         return null;
     }
@@ -106,7 +114,7 @@ public class CredentialsManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
         }
     }
 
@@ -140,7 +148,7 @@ public class CredentialsManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
 

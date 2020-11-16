@@ -14,7 +14,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.corejsf.access.CredentialsManager;
 import com.corejsf.access.EmployeeManager;
+import com.corejsf.messages.MessageProvider;
+import com.corejsf.model.employee.Credentials;
 import com.corejsf.model.employee.Employee;
 
 /**
@@ -31,6 +34,9 @@ public class EmployeeController implements Serializable {
     private static final long serialVersionUID = 5825295337476934595L;
 
     @Inject
+    private MessageProvider msgProvider;
+
+    @Inject
     /**
      * Injected conversation
      */
@@ -38,6 +44,9 @@ public class EmployeeController implements Serializable {
 
     @Inject
     private EmployeeManager empManager;
+
+    @Inject
+    private CredentialsManager credManager;
 
     /**
      * Represents an editable timesheet
@@ -59,7 +68,8 @@ public class EmployeeController implements Serializable {
         try {
             employees = empManager.getAll();
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
             return;
         }
         empList = new ArrayList<EditableEmployee>();
@@ -73,7 +83,8 @@ public class EmployeeController implements Serializable {
         try {
             empManager.remove(emp.getEmployee());
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
         }
 
         refreshList();
@@ -94,7 +105,8 @@ public class EmployeeController implements Serializable {
                 return null;
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
         }
 
         refreshList();
@@ -115,7 +127,8 @@ public class EmployeeController implements Serializable {
                 return null;
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
         }
         if (conversation.isTransient()) {
             conversation.begin();
@@ -140,10 +153,11 @@ public class EmployeeController implements Serializable {
         try {
             employee = empManager.find(username);
             if (employee == null) {
-                throw new Exception("Could not find employee with username: " + username + " ! Please try again");
+                throw new Exception(msgProvider.getValue("error.find", new Object[] { "Employee" }));
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
             return null;
         }
 
@@ -167,10 +181,11 @@ public class EmployeeController implements Serializable {
         try {
             employee = empManager.find(username);
             if (employee == null) {
-                throw new Exception("Could not find employee with username: " + username + " ! Please try again");
+                throw new Exception(msgProvider.getValue("error.find", new Object[] { "Employee" }));
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
             return null;
         }
         editEmployee = new EditableEmployee(employee, false);
@@ -186,12 +201,19 @@ public class EmployeeController implements Serializable {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
             empManager.persist(editEmployee.getEmployee());
+
+            final Credentials credentials = new Credentials(editEmployee.getEmployee().getUsername(),
+                    editEmployee.getCredentials().getPassword());
+            credentials.setEmpNumber(editEmployee.getEmployee().getEmpNumber());
+            credManager.insert(credentials);
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
+            return null;
         }
 
-        refreshList();
-        return "/employee/list";
+        conversation.end();
+        return prepareList();
     }
 
     /**
@@ -203,12 +225,18 @@ public class EmployeeController implements Serializable {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
             empManager.merge(editEmployee.getEmployee());
+
+            final Credentials credentials = new Credentials(editEmployee.getEmployee().getUsername(),
+                    editEmployee.getCredentials().getPassword());
+            credentials.setEmpNumber(editEmployee.getEmployee().getEmpNumber());
+            credManager.insert(credentials);
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
+            return null;
         }
-        refreshList();
         conversation.end();
-        return "/employee/list";
+        return prepareList();
     }
 
     /**

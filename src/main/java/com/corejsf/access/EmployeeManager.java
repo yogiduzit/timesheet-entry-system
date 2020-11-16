@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.inject.Named;
 import javax.mail.AuthenticationFailedException;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 import com.corejsf.model.employee.Employee;
 
@@ -24,12 +26,16 @@ import com.corejsf.model.employee.Employee;
 public class EmployeeManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static String TAG = "Employee";
 
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
 
     @Inject
     private CredentialsManager credentialsManager;
+
+    @Inject
+    private MessageProvider msgProvider;
 
     @Inject
     private AdminManager adminManager;
@@ -61,7 +67,8 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not find employee! Please try again");
+            ex.printStackTrace();
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
     }
 
@@ -92,7 +99,7 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not find Employee! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
     }
 
@@ -122,7 +129,7 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not create new Employee! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
     }
 
@@ -153,7 +160,7 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not update employee! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
 
@@ -178,7 +185,7 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Unable to remove user! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.delete", new Object[] { TAG }));
         }
     }
 
@@ -207,7 +214,7 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not fetch employees! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
         }
 
         final Employee[] subarray = new Employee[employees.size()];
@@ -221,11 +228,10 @@ public class EmployeeManager implements Serializable {
         }
         final Credentials found = credentialsManager.find(employee.getEmpNumber());
         if (found == null) {
-            throw new AuthenticationFailedException(
-                    "Could not find an employee with the given username / password. Please try again.");
+            throw new AuthenticationFailedException(msgProvider.getValue("error.authentication.unknownEmployee"));
         }
         if (!credentials.equals(found)) {
-            throw new AuthenticationFailedException("Unable to authenticate! Please try again");
+            throw new AuthenticationFailedException(msgProvider.getValue("error.authentication.wrongCredentials"));
         }
         return true;
     }
