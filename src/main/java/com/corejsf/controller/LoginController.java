@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.corejsf;
+package com.corejsf.controller;
 
 import java.io.Serializable;
 
@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.corejsf.access.EmployeeManager;
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 import com.corejsf.model.employee.Employee;
 
@@ -30,6 +31,12 @@ public class LoginController implements Serializable {
      * Variable for the serializable.
      */
     private static final long serialVersionUID = 6687823809360236313L;
+
+    @Inject
+    /**
+     * Provides messages from the message bundle.
+     */
+    private MessageProvider msgProvider;
 
     /**
      * Injecting the employee manager.
@@ -66,7 +73,8 @@ public class LoginController implements Serializable {
         try {
             final Employee employee = employeeManager.find(username);
             if (employee == null) {
-                context.addMessage(null, new FacesMessage("Unknown login, please try again"));
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        msgProvider.getValue("error.authentication.unknownEmployee"), null));
                 username = null;
                 password = null;
                 return null;
@@ -74,7 +82,8 @@ public class LoginController implements Serializable {
                 final Credentials credentials = new Credentials(username, password);
                 credentials.setEmpNumber(employee.getEmpNumber());
                 if (!employeeManager.verifyUser(employee, credentials)) {
-                    context.addMessage(null, new FacesMessage("Could not authenticate user, please try again"));
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            msgProvider.getValue("error.authentication.wrongCredentials"), null));
                     return null;
                 }
                 context.getExternalContext().getSessionMap().put("emp_no", employee.getUsername());
@@ -94,6 +103,7 @@ public class LoginController implements Serializable {
      */
     public String logout() {
         final FacesContext context = FacesContext.getCurrentInstance();
+        conversation.end();
         context.getExternalContext().invalidateSession();
         context.getExternalContext().getSessionMap().clear();
         return "logout";

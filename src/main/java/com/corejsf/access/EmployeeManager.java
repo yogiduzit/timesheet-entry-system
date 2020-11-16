@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.inject.Named;
 import javax.mail.AuthenticationFailedException;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 import com.corejsf.model.employee.Employee;
 
@@ -24,16 +26,39 @@ import com.corejsf.model.employee.Employee;
 public class EmployeeManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static String TAG = "Employee";
 
+    /**
+     * Datasource for the project
+     */
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
 
     @Inject
+    /**
+     * Provides access to the credentials table in the datasource
+     */
     private CredentialsManager credentialsManager;
 
     @Inject
+    /**
+     * Provides access to messages in the message bundle
+     */
+    private MessageProvider msgProvider;
+
+    @Inject
+    /**
+     * Provides access to the admin table in the datasource
+     */
     private AdminManager adminManager;
 
+    /**
+     * Finds an employee by their username
+     *
+     * @param username, unique identifier for the Employee
+     * @return Employee POJO
+     * @throws SQLException
+     */
     public Employee find(String username) throws SQLException {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -61,10 +86,18 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not find employee! Please try again");
+            ex.printStackTrace();
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
     }
 
+    /**
+     * Finds an employee by their unique number
+     *
+     * @param empNo, the unique id of the employee
+     * @return Employee POJO
+     * @throws SQLException
+     */
     public Employee find(int empNo) throws SQLException {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -92,10 +125,16 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not find Employee! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
     }
 
+    /**
+     * Inserts an Employee record into the employees table
+     *
+     * @param employee, POJO representing an employee record
+     * @throws SQLException
+     */
     public void persist(Employee employee) throws SQLException {
         final int empNo = 1;
         final int empName = 2;
@@ -122,10 +161,17 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not create new Employee! Please try again");
+            ex.printStackTrace();
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
         }
     }
 
+    /**
+     * Updates an existing employee record in the employees table
+     *
+     * @param employee, POJO representing the employee record
+     * @throws SQLException
+     */
     public void merge(Employee employee) throws SQLException {
         final int empName = 1;
         final int empUsername = 2;
@@ -153,10 +199,16 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not update employee! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
 
+    /**
+     * Removes an employee record from the employees table in the datasource
+     *
+     * @param employee, Employee POJO
+     * @throws SQLException
+     */
     public void remove(Employee employee) throws SQLException {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -178,10 +230,16 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Unable to remove user! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.delete", new Object[] { TAG }));
         }
     }
 
+    /**
+     * Gets the list of all employee records in the table
+     *
+     * @return list of all employees
+     * @throws SQLException
+     */
     public Employee[] getAll() throws SQLException {
         final ArrayList<Employee> employees = new ArrayList<Employee>();
         Connection connection = null;
@@ -207,13 +265,23 @@ public class EmployeeManager implements Serializable {
                 }
             }
         } catch (final SQLException ex) {
-            throw new SQLException("Could not fetch employees! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
         }
 
         final Employee[] subarray = new Employee[employees.size()];
         return employees.toArray(subarray);
     }
 
+    /**
+     * Verifies if the credentials of an employee match
+     *
+     * @param employee    the employee to be authenticated
+     * @param credentials credentials of the authenticating employee
+     * @return true, if credentials match
+     * @return false, otherwise
+     * @throws AuthenticationFailedException, if credentials don't match
+     * @throws SQLException
+     */
     public boolean verifyUser(Employee employee, Credentials credentials)
             throws AuthenticationFailedException, SQLException {
         if (employee == null || credentials == null) {
@@ -221,15 +289,20 @@ public class EmployeeManager implements Serializable {
         }
         final Credentials found = credentialsManager.find(employee.getEmpNumber());
         if (found == null) {
-            throw new AuthenticationFailedException(
-                    "Could not find an employee with the given username / password. Please try again.");
+            throw new AuthenticationFailedException(msgProvider.getValue("error.authentication.unknownEmployee"));
         }
         if (!credentials.equals(found)) {
-            throw new AuthenticationFailedException("Unable to authenticate! Please try again");
+            throw new AuthenticationFailedException(msgProvider.getValue("error.authentication.wrongCredentials"));
         }
         return true;
     }
 
+    /**
+     * Gets the current employee
+     *
+     * @return Employee POJO
+     * @throws SQLException
+     */
     public Employee getCurrentEmployee() throws SQLException {
         final FacesContext context = FacesContext.getCurrentInstance();
         final String username = (String) context.getExternalContext().getSessionMap().get("emp_no");
@@ -245,13 +318,26 @@ public class EmployeeManager implements Serializable {
         return current;
     }
 
+    /**
+     * Checks if the current employee is an admin
+     *
+     * @return true, if admin is logged in
+     * @return false, otherwise
+     * @throws SQLException
+     */
     public boolean isAdminLogin() throws SQLException {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final Boolean adminLogin = (Boolean) context.getExternalContext().getSessionMap().get("admin");
+        if (adminLogin != null) {
+            return adminLogin;
+        }
         final Employee currEmployee = getCurrentEmployee();
         if (currEmployee == null) {
             return false;
         }
         final Employee admin = adminManager.find();
         if (currEmployee.getUsername().equals(admin.getUsername())) {
+            context.getExternalContext().getSessionMap().put("admin", true);
             return true;
         }
         return false;

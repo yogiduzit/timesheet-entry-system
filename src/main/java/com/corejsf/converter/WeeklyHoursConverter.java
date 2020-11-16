@@ -8,6 +8,12 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 @FacesConverter("weeklyHours")
+/**
+ * Converts BigDecimal to a valid string
+ *
+ * @author yogeshverma
+ *
+ */
 public class WeeklyHoursConverter implements Converter<BigDecimal> {
 
     @Override

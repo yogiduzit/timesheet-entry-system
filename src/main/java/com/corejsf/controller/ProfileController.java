@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.corejsf;
+package com.corejsf.controller;
 
 import java.io.Serializable;
 
@@ -12,8 +12,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.corejsf.EditableEmployee;
 import com.corejsf.access.CredentialsManager;
 import com.corejsf.access.EmployeeManager;
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 import com.corejsf.model.employee.Employee;
 
@@ -42,6 +44,9 @@ public class ProfileController implements Serializable {
      * Provides access to credentials
      */
     private CredentialsManager credentialsManager;
+
+    @Inject
+    private MessageProvider msgProvider;
 
     /**
      * employee to be used in forms
@@ -82,11 +87,12 @@ public class ProfileController implements Serializable {
         try {
             employee = empManager.getCurrentEmployee();
             if (employee == null) {
-                throw new Exception("Could not find current employee! Please login again");
+                throw new Exception(msgProvider.getValue("error.profile.currEmployee"));
             }
             credentials = credentialsManager.find(employee.getEmpNumber());
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), e.getMessage()));
             return null;
         }
         editEmployee = new EditableEmployee(employee, true);
@@ -102,17 +108,22 @@ public class ProfileController implements Serializable {
         final FacesContext context = FacesContext.getCurrentInstance();
 
         if (oldPassword == null || newPassword == null || confirmNewPassword == null) {
-            context.addMessage(null, new FacesMessage("Please fill in the required fields"));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.fillFields"), null));
             return null;
         }
 
         if (!credentials.getPassword().equals(oldPassword)) {
-            context.addMessage(null, new FacesMessage("Old password is incorrect"));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.profile.oldPassword"),
+                            msgProvider.getValue("error.profile.oldPassword.desc")));
             return null;
         }
 
         if (!newPassword.equals(confirmNewPassword)) {
-            context.addMessage(null, new FacesMessage("New password and confirm new password do not match"));
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.profile.passwordUnmatch"),
+                            msgProvider.getValue("error.profile.passwordUnmatch.desc")));
             return null;
         }
 

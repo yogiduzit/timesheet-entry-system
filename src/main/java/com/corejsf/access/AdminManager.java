@@ -13,18 +13,35 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Employee;
 
 @Named("adminManager")
 @ConversationScoped
 public class AdminManager implements Serializable {
 
+    private static String TAG = "Admin";
+
     private static final long serialVersionUID = 1233413L;
+
+    /**
+     * Datasource for the project
+     */
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
-    @Inject
-    private EmployeeManager employeeManager;
 
+    @Inject
+    /**
+     * Provides access to messages in the message bundle
+     */
+    private MessageProvider msgProvider;
+
+    /**
+     * Finds the admin user for the application
+     *
+     * @return the admin employee
+     * @throws SQLDataException
+     */
     public Employee find() throws SQLDataException {
         Connection connection = null;
         Statement stmt = null;
@@ -53,7 +70,7 @@ public class AdminManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLDataException("Could not find admin! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
     }
 

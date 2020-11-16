@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Employee;
 import com.corejsf.model.timesheet.Timesheet;
 import com.corejsf.model.timesheet.TimesheetRow;
@@ -34,6 +36,7 @@ public class TimesheetManager implements Serializable {
      * Variable for the serializable.
      */
     private static final long serialVersionUID = -1786252399378663291L;
+    private static String TAG = "Timesheet";
 
     /**
      * Datasource for a project
@@ -46,6 +49,9 @@ public class TimesheetManager implements Serializable {
 
     @Inject
     private EmployeeManager empManager;
+
+    @Inject
+    private MessageProvider msgProvider;
 
     /**
      * Getting the Timesheets.
@@ -83,7 +89,7 @@ public class TimesheetManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException("Could not get timesheets! Please try again");
+            throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
         }
         return timesheets;
     }
@@ -105,7 +111,7 @@ public class TimesheetManager implements Serializable {
                     stmt.setInt(1, empNo);
                     final ResultSet result = stmt.executeQuery();
                     while (result.next()) {
-                        final int id = result.getInt("Id");
+                        final int id = result.getInt("TimesheetID");
                         final List<TimesheetRow> rows = rowManager.getTimesheetRows(id);
                         final Employee employee = empManager.find(result.getInt("EmpNo"));
                         final Timesheet timesheet = new Timesheet(employee, result.getDate("EndWeek").toLocalDate(),
@@ -125,7 +131,7 @@ public class TimesheetManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
         }
         return timesheets;
     }
@@ -152,12 +158,13 @@ public class TimesheetManager implements Serializable {
                     stmt.setInt(EmpNo, timesheet.getEmployee().getEmpNumber());
                     stmt.setDate(EndWeek, java.sql.Date.valueOf(timesheet.getEndWeek()));
                     stmt.executeUpdate();
-                    connection.commit();
 
                     final ResultSet rs = stmt.getGeneratedKeys();
                     if (rs.next()) {
                         timesheetId = rs.getInt(1);
                     }
+                    connection.commit();
+                    rowManager.create(timesheetId, timesheet.getDetails());
                 } catch (final SQLException e) {
                     connection.rollback();
                     throw e;
@@ -173,7 +180,7 @@ public class TimesheetManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw ex;
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
         }
         return timesheetId;
     }
@@ -202,6 +209,7 @@ public class TimesheetManager implements Serializable {
                     stmt.setInt(TimesheetID, timesheet.getId());
                     stmt.executeUpdate();
                     connection.commit();
+                    rowManager.update(timesheet.getId(), timesheet.getDetails());
                 } catch (final Exception e) {
                     connection.rollback();
                     e.printStackTrace();
@@ -217,7 +225,7 @@ public class TimesheetManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
 
@@ -260,7 +268,7 @@ public class TimesheetManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
         return timesheet;
     }

@@ -7,13 +7,16 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.ConversationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import com.corejsf.messages.MessageProvider;
 import com.corejsf.model.employee.Credentials;
 
 /**
@@ -27,6 +30,8 @@ import com.corejsf.model.employee.Credentials;
 @ConversationScoped
 public class CredentialsManager implements Serializable {
 
+    private static String TAG = "Credential";
+
     /**
      * Variable for implementing Serialiable
      */
@@ -38,11 +43,18 @@ public class CredentialsManager implements Serializable {
     @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
     private DataSource dataSource;
 
+    @Inject
+    /**
+     * Provides access to the messages from the message bundle
+     */
+    private MessageProvider msgProvider;
+
     /**
      * Method to get the credentials by employee number
      *
-     * @param empNumber
-     * @return credentials
+     * @param empNumber, number of the employee whose credentials need to be found
+     * @return credentials, username and password of the employee
+     * @return null, if the emp does not exist
      * @throws SQLException
      */
     public Credentials find(int empNumber) throws SQLException {
@@ -73,11 +85,17 @@ public class CredentialsManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
         }
         return null;
     }
 
+    /**
+     * Adds a Credentials record to the Credentials table in the datasource
+     *
+     * @param credentials, credentials object containing username and password
+     * @throws SQLException
+     */
     public void insert(Credentials credentials) throws SQLException {
         final int EmpNo = 1;
         final int EmpUserName = 2;
@@ -106,10 +124,16 @@ public class CredentialsManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
         }
     }
 
+    /**
+     * Updates an existing Credentials record in the datasource
+     *
+     * @param credentials, credentials object containing username and password
+     * @throws SQLException
+     */
     public void merge(Credentials credentials) throws SQLException {
         final int EmpUserName = 1;
         final int EmpPassword = 2;
@@ -140,7 +164,7 @@ public class CredentialsManager implements Serializable {
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
-            throw new SQLException(ex.getCause());
+            throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
 
