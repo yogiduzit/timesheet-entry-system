@@ -3,7 +3,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 	<h:outputStylesheet library="css" name="style.css" />
@@ -17,22 +18,21 @@
 				</div>
 
 				<div class="employee-input-container">
-					<h:inputText class="input-employee"
-						value="#{employeeController.editEmployee.employee.empNumber}"
-						a:placeholder="Employee No:" />
-					<h:inputText class="input-employee"
-						value="#{employeeController.editEmployee.employee.username}"
-						a:placeholder="Username:" />
-					<h:inputText class="input-employee"
-						value="#{employeeController.editEmployee.credentials.password}"
-						a:placeholder="Password:" />
-					<h:inputText class="input-employee"
-						value="#{employeeController.editEmployee.employee.fullName}"
-						a:placeholder="Name:" />
+					<h:outputText value="#{msgs.empNumber}" />
+					<p:inputText class="input-employee"
+						value="#{employeeController.editEmployee.employee.empNumber}" />
+					<h:outputText value="#{msgs['employee.empUsername']}" />
+					<p:inputText class="input-employee"
+						value="#{employeeController.editEmployee.employee.username}"/>
+					<h:outputText value="#{msgs['credentials.password']}" />
+					<p:password class="input-employee" value="#{employeeController.editEmployee.credentials.password}" feedback="true"/>
+					<h:outputText value="#{msgs.empFullName}" />
+					<p:inputText class="input-employee"
+						value="#{employeeController.editEmployee.employee.fullName}"/>
 				</div>
 
 				<div class="create-employee-btn-container">
-					<h:commandButton class="btn-secondary" action="#{employeeController.onCreate()}"
+					<h:commandButton class="btn-primary" action="#{employeeController.onCreate()}"
 						value="#{msgs.createBtn}" />
 				</div>
 
