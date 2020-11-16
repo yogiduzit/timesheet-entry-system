@@ -40,7 +40,7 @@ public class CredentialsManager implements Serializable {
     /**
      * Datasource for a project
      */
-    @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
+    @Resource(mappedName = "java:jboss/datasources/MySQLDS")
     private DataSource dataSource;
 
     @Inject

@@ -31,7 +31,7 @@ public class EmployeeManager implements Serializable {
     /**
      * Datasource for the project
      */
-    @Resource(mappedName = "java:jboss/datasources/timesheet_entry_system")
+    @Resource(mappedName = "java:jboss/datasources/MySQLDS")
     private DataSource dataSource;
 
     @Inject
