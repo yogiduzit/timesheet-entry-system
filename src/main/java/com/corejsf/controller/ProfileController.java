@@ -107,7 +107,8 @@ public class ProfileController implements Serializable {
     public String onSaveProfile() {
         final FacesContext context = FacesContext.getCurrentInstance();
 
-        if (oldPassword == null || newPassword == null || confirmNewPassword == null) {
+        if (oldPassword == null || newPassword == null || confirmNewPassword == null || oldPassword.isEmpty()
+                || newPassword.isEmpty() || confirmNewPassword.isEmpty()) {
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.fillFields"), null));
             return null;
