@@ -214,7 +214,7 @@ public class TimesheetController implements Serializable {
             editTimesheet.getTimesheet().setEmployee(empManager.getCurrentEmployee());
             manager.insert(editTimesheet.getTimesheet());
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getMessage()));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
             timesheets = null;
             return null;
         }
@@ -234,7 +234,7 @@ public class TimesheetController implements Serializable {
         try {
             manager.merge(editTimesheet.getTimesheet());
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getMessage()));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
             timesheets = null;
             return null;
         }
