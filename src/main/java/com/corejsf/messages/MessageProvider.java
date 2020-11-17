@@ -1,6 +1,7 @@
 package com.corejsf.messages;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -29,7 +30,8 @@ public class MessageProvider {
     public ResourceBundle getBundle() {
         if (bundle == null) {
             final FacesContext context = FacesContext.getCurrentInstance();
-            bundle = context.getApplication().getResourceBundle(context, "msgs");
+            final Locale locale = context.getViewRoot().getLocale();
+            bundle = ResourceBundle.getBundle("messages", locale);
         }
         return bundle;
     }
