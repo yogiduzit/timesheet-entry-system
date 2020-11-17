@@ -152,7 +152,7 @@ ul li img {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	min-height: 90vh;
+	min-height: 70vh;
 }
 
 .form-container {
@@ -207,7 +207,8 @@ ul li img {
 }
 
 .login-form-container {
-	height: 40vh;
+	margin-top: 10%;
+	height: 70vh;
 	width: 30vw;
 }
 
@@ -527,6 +528,10 @@ ul li img {
 	cursor: pointer;
 	border-radius: 10px;
 	font-size: 2.25vh;
+}
+
+#messages {
+	margin: 10px;
 }
 
 

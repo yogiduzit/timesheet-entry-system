@@ -15,26 +15,31 @@
          </ui:define>
 		<ui:define name="main">
 			<div class="main" id="main">
-				<h:messages styleClass="error-messages" layout="table" />
-				<h3 class ="login-page-heading">#{msgs['login.heading']}</h3>
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
 				<div class="login-form-container">
+					<h3 class="login-page-heading">#{msgs['login.heading']}</h3>
 					<h:form styleClass="login-form">
 						<div class="username-container-login-container">
 							<div class="username-input-container-login-input-container">
 								<p class="username-label">#{msgs['credentials.username']}</p>
-								<p:inputText id="username" value="#{loginController.username}" styleClass="username-input login-input" />
+								<p:inputText id="username" value="#{loginController.username}"
+									styleClass="username-input login-input" />
 							</div>
-							<h:message for="username" styleClass="username-errors"/>
+							<h:message for="username" styleClass="username-errors" />
 						</div>
 						<div class="password-container-login-container">
 							<div class="password-input-container-login-input-container">
 								<p class="password-label">#{msgs['credentials.password']}</p>
-								<p:password id="password" value="#{loginController.password}" styleClass="password-input login-input" />
+								<p:password id="password" value="#{loginController.password}"
+									styleClass="password-input login-input" />
 							</div>
-							<h:message for="password" styleClass="password-errors"/>
+							<h:message for="password" styleClass="password-errors" />
 						</div>
 
-						<h:commandButton action="#{loginController.login()}" value="#{msgs.login}" styleClass="btn-primary"/>
+						<h:commandButton action="#{loginController.login()}"
+							value="#{msgs.login}" styleClass="btn-primary" />
 
 					</h:form>
 				</div>

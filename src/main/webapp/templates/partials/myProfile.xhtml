@@ -19,8 +19,8 @@
 
 				<div class="employee-input-container">
 					<h:outputText value="#{msgs['credentials.username']}" />
-					
-					<p:inputText class="input-employee" value="#{profileController.editEmployee.employee.username}"/>
+					<p:inputText class="input-employee" value="#{profileController.editEmployee.employee.username}" rendered="#{employeeManager.adminLogin}"/>
+					<h:outputText class="input-employee" value="#{profileController.editEmployee.employee.username}" rendered="#{not employeeManager.adminLogin}"/>
 					<h:outputText value="#{msgs.oldPassword}" />
 					<p:password class="input-employee" value="#{profileController.oldPassword}"/>
 					<h:outputText value="#{msgs.newPassword}" />

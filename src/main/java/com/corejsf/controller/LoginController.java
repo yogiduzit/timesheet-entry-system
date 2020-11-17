@@ -91,7 +91,7 @@ public class LoginController implements Serializable {
                 return "success";
             }
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
             return null;
         }
     }
@@ -103,10 +103,27 @@ public class LoginController implements Serializable {
      */
     public String logout() {
         final FacesContext context = FacesContext.getCurrentInstance();
-        conversation.end();
+        if (!conversation.isTransient()) {
+            conversation.end();
+        }
         context.getExternalContext().invalidateSession();
         context.getExternalContext().getSessionMap().clear();
         return "logout";
+    }
+
+    /**
+     * Checks if a user is authenticated or not
+     *
+     * @return true, if user is authenticated
+     * @return false, otherwise
+     */
+    public boolean isAuthenticated() {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final String username = (String) context.getExternalContext().getSessionMap().get("emp_no");
+        if (username == null) {
+            return false;
+        }
+        return true;
     }
 
     /**

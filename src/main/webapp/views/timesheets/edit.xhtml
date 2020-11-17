@@ -15,7 +15,9 @@
          </ui:define>
 		<ui:define name="main">
 			<div class="main">
-				<h:messages styleClass="error-messages" layout="table" />
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
 				<h2 class="edit-timesheet-header">#{msgs['timesheet.editTitle']}</h2>
 				<h:form class="timesheet-form">
 					<div class="timesheet-weekend-container">

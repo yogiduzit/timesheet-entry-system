@@ -15,7 +15,9 @@
          </ui:define>
 		<ui:define name="main">
 			<div class="main">
-				<h:messages styleClass="error-messages" layout="table" />
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
 				<h2 id="create-table-heading">#{msgs['timesheet.create']}</h2>
 				<h:form class="timesheet-form">
 					<div class="timesheet-attr-container">

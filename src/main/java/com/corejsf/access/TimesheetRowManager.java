@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,6 +132,9 @@ public class TimesheetRowManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
@@ -179,6 +183,9 @@ public class TimesheetRowManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
