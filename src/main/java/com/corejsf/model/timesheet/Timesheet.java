@@ -62,12 +62,20 @@ public class Timesheet implements java.io.Serializable {
     private BigDecimal flextime;
 
     /**
+     * Number of work days in a week
+     */
+    private static final int WORK_DAYS = 5;
+
+    /**
      * Constructor for Timesheet. Initialize a Timesheet with no rows, no employee
      * and to the current date.
      */
     public Timesheet() {
         details = new ArrayList<TimesheetRow>();
         endWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+        for (int i = 0; i < WORK_DAYS; i++) {
+            details.add(new TimesheetRow());
+        }
     }
 
     /**
@@ -82,6 +90,12 @@ public class Timesheet implements java.io.Serializable {
         checkFriday(end);
         endWeek = end;
         details = charges;
+        if (details.size() < WORK_DAYS) {
+            final int newRows = WORK_DAYS - details.size();
+            for (int i = 0; i < newRows; i++) {
+                details.add(new TimesheetRow());
+            }
+        }
     }
 
     /**

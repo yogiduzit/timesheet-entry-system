@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.ConversationScoped;
@@ -122,6 +123,9 @@ public class CredentialsManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
@@ -162,6 +166,9 @@ public class CredentialsManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));

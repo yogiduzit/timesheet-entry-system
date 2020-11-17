@@ -15,7 +15,9 @@
          </ui:define>
 		<ui:define name="main">
 			<div class="main">
-				<h:messages styleClass="error-messages" layout="table" />
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
 				<h2 class="edit-timesheet-header">#{msgs['timesheet.editTitle']}</h2>
 				<h:form class="timesheet-form">
 					<div class="timesheet-weekend-container">
@@ -32,9 +34,9 @@
 
 					<div class="buttons-container">
 						<h:commandButton action="#{timesheetController.onAddRow()}"
-							value="#{msgs['timesheet.addRow']}" styleClass="btn-primary" />
+							value="#{msgs['timesheet.addRow']}" styleClass="create-btn" />
 						<h:commandButton action="#{timesheetController.onEdit()}"
-							value="#{msgs['timesheet.save']}"  styleClass="btn-create"/>
+							value="#{msgs['timesheet.save']}"  styleClass="create-btn"/>
 					</div>
 				</h:form>
 			</div>

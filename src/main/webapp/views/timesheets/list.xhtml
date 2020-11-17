@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 </h:head>
@@ -14,24 +15,26 @@
          </ui:define>
 		<ui:define name="main">
 			<div class="main">
-				<h:messages styleClass="error-messages" layout="table" />
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
 				<h2 class="all-timesheet-header">#{msgs['allTimesheet']}</h2>
 				<div class="timesheets-container">
 
 					<ui:repeat value="#{timesheetController.timesheets}" var="timesheet">
 						<div class="timesheet-container">
 							<div class="timesheet-data">
-								<h2 class="timesheet-week-number">#{msgs['timesheet.week']}
-									#{timesheet.weekNumber}</h2>
-								<h2 class="timesheet-week-end">
+								<h4 class="timesheet-week-number">#{msgs['timesheet.week']}
+									#{timesheet.weekNumber}</h4>
+								<h4 class="timesheet-week-end">
 									<h:outputText value="#{timesheet.endWeek}"
 										styleClass="timesheet-weekend-input">
 										<f:convertDateTime type="localDate" />
 									</h:outputText>
-								</h2>
+								</h4>
 
-								<h2 class="timesheet-total-hours">#{msgs['timesheet.totalHours']}:
-									#{timesheet.totalHours}</h2>
+								<h4 class="timesheet-total-hours">#{msgs['timesheet.totalHours']}:
+									#{timesheet.totalHours}</h4>
 							</div>
 							<div class="timesheet-buttons-container">
 								<h:form styleClass="timesheet-buttons">

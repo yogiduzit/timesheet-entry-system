@@ -22,6 +22,7 @@
 						rendered="#{not timesheetController.editTimesheet.editable}" />
 					<p:inputText value="#{timesheetRow.projectID}"
 						rendered="#{timesheetController.editTimesheet.editable}" />
+						<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{msgs['timesheetRow.total']}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.workPackage']}</f:facet>
@@ -33,6 +34,7 @@
 				<p:column rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}">
 					<f:facet name="header">#{msgs['timesheetRow.total']}</f:facet>
 					<h:outputText value="#{timesheetRow.sum}" />
+					<f:facet name="footer">#{timesheetController.editTimesheet.timesheet.totalHours}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.saturday']}</f:facet>
@@ -43,6 +45,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[0]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.sunday']}</f:facet>
@@ -52,6 +55,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[1]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.monday']}</f:facet>
@@ -61,6 +65,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[2]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.tuesday']}</f:facet>
@@ -70,6 +75,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[3]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.wednesday']}</f:facet>
@@ -79,6 +85,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[4]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.thursday']}</f:facet>
@@ -88,6 +95,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[5]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.friday']}</f:facet>
@@ -97,6 +105,7 @@
 						rendered="#{timesheetController.editTimesheet.editable}">
 						<f:validateDoubleRange minimum="0.0" maximum="24.0" />
 					</p:inputText>
+					<f:facet rendered="#{view.viewId eq '/views/timesheets/view.xhtml'}" name="footer">#{timesheetController.editTimesheet.timesheet.dailyHours[6]}</f:facet>
 				</p:column>
 				<p:column>
 					<f:facet name="header">#{msgs['timesheetRow.comments']}</f:facet>

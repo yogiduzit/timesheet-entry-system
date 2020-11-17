@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
@@ -129,6 +133,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.getAll", new Object[] { TAG }));
@@ -178,6 +185,9 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
@@ -223,54 +233,12 @@ public class TimesheetManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));
         }
     }
-
-    public Timesheet find(Integer empNo, String weekEnding) throws SQLException {
-        final Timesheet timesheet = new Timesheet();
-
-        final int EmpNo = 1;
-        final int WeekEnd = 2;
-
-        Connection connection = null;
-        PreparedStatement stmt = null;
-        try {
-            try {
-                connection = dataSource.getConnection();
-                try {
-                    stmt = connection.prepareStatement(
-                            "SELECT * FROM Timesheets WHERE EmpNo = ? AND EndWeek = ? ORDER BY TimesheetID");
-                    stmt.setInt(EmpNo, empNo);
-                    stmt.setDate(WeekEnd, java.sql.Date.valueOf(weekEnding));
-                    final ResultSet result = stmt.executeQuery();
-                    while (result.next()) {
-                        final int id = result.getInt("Id");
-                        final ArrayList<TimesheetRow> rows = rowManager.getTimesheetRows(id);
-                        final Employee employee = empManager.find(result.getInt("EmpNo"));
-                        timesheet.setEmployee(employee);
-                        timesheet.setEndWeek(result.getDate("EndWeek").toLocalDate());
-                        timesheet.setDetails(rows);
-                        timesheet.setId(id);
-                        return timesheet;
-                    }
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-            } finally {
-                if (connection != null) {
-                    connection.close();
-                }
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-            throw new SQLDataException(msgProvider.getValue("error.find", new Object[] { TAG }));
-        }
-        return timesheet;
-    }
-
 }

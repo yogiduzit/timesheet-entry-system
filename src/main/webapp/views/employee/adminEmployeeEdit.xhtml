@@ -2,7 +2,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>IGNORED</title>
 </h:head>
@@ -18,7 +19,9 @@
          </ui:define>
          <ui:define name="main">
          	<div class="main">
-         		<h:messages styleClass="error-messages" layout="table" />
+         		<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
          		<ui:include src="/templates/partials/editEmployee.xhtml" />
          	</div>
          </ui:define>

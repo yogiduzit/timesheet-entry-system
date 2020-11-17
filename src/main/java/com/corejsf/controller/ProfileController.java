@@ -107,32 +107,31 @@ public class ProfileController implements Serializable {
     public String onSaveProfile() {
         final FacesContext context = FacesContext.getCurrentInstance();
 
-        if (oldPassword == null || newPassword == null || confirmNewPassword == null) {
+        if (oldPassword == null || newPassword == null || confirmNewPassword == null || oldPassword.isEmpty()
+                || newPassword.isEmpty() || confirmNewPassword.isEmpty()) {
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.fillFields"), null));
             return null;
         }
-
         if (!credentials.getPassword().equals(oldPassword)) {
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.profile.oldPassword"),
                             msgProvider.getValue("error.profile.oldPassword.desc")));
             return null;
         }
-
         if (!newPassword.equals(confirmNewPassword)) {
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, msgProvider.getValue("error.profile.passwordUnmatch"),
                             msgProvider.getValue("error.profile.passwordUnmatch.desc")));
             return null;
         }
-
-        credentials.setUsername(editEmployee.getEmployee().getUsername());
         credentials.setPassword(newPassword);
+        credentials.setUsername(editEmployee.getEmployee().getUsername());
+
         try {
             credentialsManager.merge(credentials);
         } catch (final Exception e) {
-            context.addMessage(null, new FacesMessage(e.getLocalizedMessage()));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
             return null;
         }
         conversation.end();

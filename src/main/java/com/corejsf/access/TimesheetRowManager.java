@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,6 +113,9 @@ public class TimesheetRowManager implements Serializable {
                 try {
                     stmt = connection.prepareStatement("INSERT INTO TimesheetRows VALUES(?, ?, ?, ?, ?)");
                     for (final TimesheetRow timesheetRow : timesheetRows) {
+                        if (timesheetRow.getWorkPackage() == null || timesheetRow.getWorkPackage().isEmpty()) {
+                            continue;
+                        }
                         stmt.setInt(TimesheetID, timesheetId);
                         stmt.setInt(ProjectID, timesheetRow.getProjectID());
                         stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
@@ -131,6 +135,9 @@ public class TimesheetRowManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.create", new Object[] { TAG }));
@@ -160,6 +167,9 @@ public class TimesheetRowManager implements Serializable {
                     stmt = connection.prepareStatement("UPDATE TimesheetRows "
                             + "SET HoursForWeek=?, Notes=?, ProjectID=?, WorkPackage=? " + "WHERE TimesheetId = ?");
                     for (final TimesheetRow timesheetRow : timesheetRows) {
+                        if (timesheetRow.getWorkPackage() == null || timesheetRow.getWorkPackage().isEmpty()) {
+                            continue;
+                        }
                         stmt.setInt(TimesheetID, timesheetId);
                         stmt.setInt(ProjectID, timesheetRow.getProjectID());
                         stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
@@ -179,6 +189,9 @@ public class TimesheetRowManager implements Serializable {
                     connection.close();
                 }
             }
+        } catch (final SQLIntegrityConstraintViolationException ex) {
+            ex.printStackTrace();
+            throw ex;
         } catch (final SQLException ex) {
             ex.printStackTrace();
             throw new SQLDataException(msgProvider.getValue("error.edit", new Object[] { TAG }));

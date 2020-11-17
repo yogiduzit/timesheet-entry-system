@@ -12,17 +12,17 @@
 		<div class="navbar-container">
 			<div class="logo-container">
 				<h:graphicImage id="img" value="/resources/img/logo.png" />
-				<h1>#{msgs.appTitle}</h1>
+				<h3>#{msgs.appTitle}</h3>
 			</div>
 			<div class="title-container">
-				<h1>
+				<h3>
 					<h:outputFormat value="#{msgs.orgTitle}" />
-				</h1>
+				</h3>
 			</div>
 			<div class="logout-container">
 				<h:form styleClass="logout-button">
 					<p:commandButton class="btn-primary logout-btn" action="#{loginController.logout()}"
-						value="#{msgs.logout}" />
+						value="#{msgs.logout}" rendered="#{loginController.authenticated}" />
 				</h:form>
 			</div>
 		</div>
