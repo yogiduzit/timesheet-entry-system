@@ -220,6 +220,7 @@ public class TimesheetController implements Serializable {
         }
 
         editTimesheet = null;
+        timesheets = null;
         conversation.end();
         return prepareList();
     }
@@ -240,6 +241,7 @@ public class TimesheetController implements Serializable {
         }
 
         editTimesheet = null;
+        timesheets = null;
         conversation.end();
         return prepareList();
     }
