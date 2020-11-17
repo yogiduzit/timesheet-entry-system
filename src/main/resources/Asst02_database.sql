@@ -76,6 +76,8 @@ CREATE TABLE TimesheetRows(
     CONSTRAINT FKTimesheetRowsTimesheetID
         FOREIGN KEY (TimesheetID)
             REFERENCES Timesheets (TimesheetID)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
 );
 
 INSERT INTO Timesheets VALUES (1, DATE'2020-11-13', 1);
