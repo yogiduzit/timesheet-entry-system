@@ -28,9 +28,9 @@ public class MessageProvider {
      * @return resource bundle containing strings
      */
     public ResourceBundle getBundle() {
-        if (bundle == null) {
-            final FacesContext context = FacesContext.getCurrentInstance();
-            final Locale locale = context.getViewRoot().getLocale();
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final Locale locale = context.getViewRoot().getLocale();
+        if (bundle == null || !bundle.getLocale().equals(locale)) {
             bundle = ResourceBundle.getBundle("messages", locale);
         }
         return bundle;
