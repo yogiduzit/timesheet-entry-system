@@ -49,16 +49,16 @@ public class TimesheetRow implements java.io.Serializable {
     }
 
     /**
-     * Creates a TimesheetDetails object with all fields set. Used to create
-     * sample data.
-     * @param id project id
-     * @param wp work package number (alphanumeric)
-     * @param hours number of hours charged for each day of week.
-     *      null represents ZERO
+     * Creates a TimesheetDetails object with all fields set. Used to create sample
+     * data.
+     *
+     * @param id       project id
+     * @param wp       work package number (alphanumeric)
+     * @param hours    number of hours charged for each day of week. null represents
+     *                 ZERO
      * @param comments any notes with respect to this work package charges
      */
-    public TimesheetRow(final int id, final String wp,
-            final BigDecimal[] hours, final String comments) {
+    public TimesheetRow(final int id, final String wp, final BigDecimal[] hours, final String comments) {
         setProjectID(id);
         setWorkPackage(wp);
         setHoursForWeek(hours);
@@ -67,6 +67,7 @@ public class TimesheetRow implements java.io.Serializable {
 
     /**
      * projectID getter.
+     *
      * @return the projectID
      */
     public int getProjectID() {
@@ -75,14 +76,16 @@ public class TimesheetRow implements java.io.Serializable {
 
     /**
      * projectID setter.
+     *
      * @param id the projectID to set
      */
     public void setProjectID(final int id) {
-        this.projectID = id;
+        projectID = id;
     }
 
     /**
      * workPackage getter.
+     *
      * @return the workPackage
      */
     public String getWorkPackage() {
@@ -91,14 +94,16 @@ public class TimesheetRow implements java.io.Serializable {
 
     /**
      * workPackage setter.
+     *
      * @param wp the workPackage to set
      */
     public void setWorkPackage(final String wp) {
-        this.workPackage = wp;
+        workPackage = wp;
     }
 
     /**
      * hoursForWeek getter.
+     *
      * @return the hours charged for each day
      */
     public BigDecimal[] getHoursForWeek() {
@@ -107,15 +112,17 @@ public class TimesheetRow implements java.io.Serializable {
 
     /**
      * hoursForWeek setter.
+     *
      * @param hours the hours charged for each day
      */
     public void setHoursForWeek(final BigDecimal[] hours) {
         checkHoursForWeek(hours);
-        this.hoursForWeek = hours;
+        hoursForWeek = hours;
     }
 
     /**
      * gets hour for a give day of the week.
+     *
      * @param day The day of week to return charges for
      * @return charges in hours of specific day in week
      */
@@ -125,65 +132,65 @@ public class TimesheetRow implements java.io.Serializable {
 
     /**
      * sets hour for a given day of the week.
-    * @param day The day of week to set the hour
-    * @param hour The number of hours worked for that day
-    */
-   public void setHour(final int day, final BigDecimal hour) {
-       checkHour(hour);
-       hoursForWeek[day] = hour;
-   }
-   /**
-    * sets hour for a given day.
-   * @param day The day of week to set the hour
-   * @param hour The number of hours worked for that day
-   */
-  public void setHour(final int day, final double hour) {
-      BigDecimal bdHour = null;
-      if (hour != 0.0) {
-          bdHour = new BigDecimal(hour).setScale(1, BigDecimal.ROUND_HALF_UP);
-      }
-      checkHour(bdHour);
-      hoursForWeek[day] = bdHour;
-  }
+     *
+     * @param day  The day of week to set the hour
+     * @param hour The number of hours worked for that day
+     */
+    public void setHour(final int day, final BigDecimal hour) {
+        checkHour(hour);
+        hoursForWeek[day] = hour;
+    }
 
     /**
-     * Checks if hour value is out of the valid
-     * bounds of 0.0 to 24.0, or has more than one decimal digit.
+     * sets hour for a given day.
      *
-     *@param hour the value to check
+     * @param day  The day of week to set the hour
+     * @param hour The number of hours worked for that day
+     */
+    public void setHour(final int day, final double hour) {
+        BigDecimal bdHour = null;
+        if (hour != 0.0) {
+            bdHour = new BigDecimal(hour).setScale(1, BigDecimal.ROUND_HALF_UP);
+        }
+        checkHour(bdHour);
+        hoursForWeek[day] = bdHour;
+    }
+
+    /**
+     * Checks if hour value is out of the valid bounds of 0.0 to 24.0, or has more
+     * than one decimal digit.
+     *
+     * @param hour the value to check
      */
     private void checkHour(final BigDecimal hour) {
         if (hour != null) {
-            if (hour.compareTo(Timesheet.HOURS_IN_DAY) > 0.0
-                    || hour.compareTo(BigDecimal.ZERO) < 0.0) {
-                throw new IllegalArgumentException(
-                       "out of range: should be between 0 and 24");
+            if (hour.compareTo(Timesheet.HOURS_IN_DAY) > 0.0 || hour.compareTo(BigDecimal.ZERO) < 0.0) {
+                throw new IllegalArgumentException("out of range: should be between 0 and 24");
             }
             if (hour.scale() > 1) {
-                throw new IllegalArgumentException(
-                        "too many decimal digits: should be at most 1");
+                throw new IllegalArgumentException("too many decimal digits: should be at most 1");
             }
         }
     }
 
     /**
-     * Checks if any hour value in any day of the week is out of the valid
-     * bounds of 0.0 to 24.0, or has more than one decimal digit.
+     * Checks if any hour value in any day of the week is out of the valid bounds of
+     * 0.0 to 24.0, or has more than one decimal digit.
      *
      * @param hours array of hours charged for each day in a week
      */
     private void checkHoursForWeek(final BigDecimal[] hours) {
         if (hours.length != Timesheet.DAYS_IN_WEEK) {
-            throw new IllegalArgumentException(
-                    "wrong week length: should be 7");
+            throw new IllegalArgumentException("wrong week length: should be 7");
         }
-        for (BigDecimal next : hours) {
+        for (final BigDecimal next : hours) {
             checkHour(next);
         }
     }
 
     /**
      * getter for notes section.
+     *
      * @return the notes
      */
     public String getNotes() {
@@ -192,19 +199,21 @@ public class TimesheetRow implements java.io.Serializable {
 
     /**
      * setter for notes section.
+     *
      * @param comments the notes to set
      */
     public void setNotes(final String comments) {
-        this.notes = comments;
+        notes = comments;
     }
 
     /**
      * adds total hours for this timesheet row.
+     *
      * @return the weekly hours
      */
     public BigDecimal getSum() {
         BigDecimal sum = BigDecimal.ZERO;
-        for (BigDecimal next : hoursForWeek) {
+        for (final BigDecimal next : hoursForWeek) {
             if (next != null) {
                 sum = sum.add(next);
             }

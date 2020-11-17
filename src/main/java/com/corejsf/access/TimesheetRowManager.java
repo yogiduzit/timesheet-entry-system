@@ -113,6 +113,9 @@ public class TimesheetRowManager implements Serializable {
                 try {
                     stmt = connection.prepareStatement("INSERT INTO TimesheetRows VALUES(?, ?, ?, ?, ?)");
                     for (final TimesheetRow timesheetRow : timesheetRows) {
+                        if (timesheetRow.getWorkPackage() == null || timesheetRow.getWorkPackage().isEmpty()) {
+                            continue;
+                        }
                         stmt.setInt(TimesheetID, timesheetId);
                         stmt.setInt(ProjectID, timesheetRow.getProjectID());
                         stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
@@ -164,6 +167,9 @@ public class TimesheetRowManager implements Serializable {
                     stmt = connection.prepareStatement("UPDATE TimesheetRows "
                             + "SET HoursForWeek=?, Notes=?, ProjectID=?, WorkPackage=? " + "WHERE TimesheetId = ?");
                     for (final TimesheetRow timesheetRow : timesheetRows) {
+                        if (timesheetRow.getWorkPackage() == null || timesheetRow.getWorkPackage().isEmpty()) {
+                            continue;
+                        }
                         stmt.setInt(TimesheetID, timesheetId);
                         stmt.setInt(ProjectID, timesheetRow.getProjectID());
                         stmt.setString(WorkPackage, timesheetRow.getWorkPackage());
